@@ -1,7 +1,7 @@
 {
   "name": "kinesis.js",
   "version": "1.0.0",
-  "description": "A library for interactive animations using Kinesis elements.",
+  "description": "Easily create complex interactive animations.",
   "main": "dist/index.js",
   "module": "dist/index.js",
   "types": "dist/index.d.ts",
@@ -14,7 +14,7 @@
     "interactive",
     "transformations"
   ],
-  "author": "Your Name <your.email@example.com>",
+  "author": "Amine Bouyarmane",
   "license": "MIT",
   "repository": {
     "type": "git",
@@ -22,15 +22,17 @@
   },
   "scripts": {
     "dev": "vite",
-    "build": "tsc && vite build",
+    "build": "vite build && tsc",
     "preview": "vite preview",
     "prepare": "npm run build",
     "prepublishOnly": "npm test"
   },
   "devDependencies": {
+    "@types/node": "^22.5.5",
     "typescript": "^5.5.3",
     "vite": "^5.4.1"
   },
-  "peerDependencies": {},
-  "dependencies": {}
+  "dependencies": {
+    "path": "^0.12.7"
+  }
 }

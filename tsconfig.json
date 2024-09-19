@@ -8,15 +8,20 @@
       "DOM.Iterable"
     ],
     "moduleResolution": "node",
-    "outDir": "dist",
-    "declaration": true,
-    "declarationDir": "dist",
+    "outDir": "dist", // The output directory for the compiled files
+    "declaration": true, // Generate .d.ts declaration files
+    "declarationDir": "dist", // Place declaration files in the dist folder
+    "emitDeclarationOnly": true, // Only emit the declaration files (omit compiled JS)
     "isolatedModules": true,
     "strict": true,
     "esModuleInterop": true,
     "skipLibCheck": true
   },
   "include": [
-    "src"
-  ]
+    "src/**/*.ts"
+  ], // Include all .ts files in the src folder
+  "exclude": [
+    "node_modules",
+    "dist"
+  ] // Exclude unnecessary folders
 }
