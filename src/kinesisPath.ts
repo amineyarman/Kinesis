@@ -5,7 +5,7 @@ import { clamp, getMousePosition } from "./utils";
 class KinesisPath {
   container: HTMLElement;
   elements: KinesisPathElement[] = [];
-  options: KinesisPathOptions;
+  options: Required<KinesisPathOptions>;
   isActive: boolean;
   interaction: "move" | "scroll"; // Shouldn't allow undefined anymore
   pathLength: number;
