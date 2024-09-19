@@ -1,9 +1,9 @@
 {
-  "name": "kinesis.js",
-  "version": "1.0.0",
+  "name": "@aminerman/kinesis.js",
+  "version": "1.0.1",
   "description": "Easily create complex interactive animations.",
-  "main": "dist/index.js",
-  "module": "dist/index.js",
+  "main": "dist/kinesis.umd.js",
+  "module": "dist/kinesis.es.js",
   "types": "dist/index.d.ts",
   "files": [
     "dist"
@@ -24,15 +24,12 @@
     "dev": "vite",
     "build": "vite build && tsc",
     "preview": "vite preview",
-    "prepare": "npm run build",
-    "prepublishOnly": "npm test"
+    "test": "echo \"Error: no test specified\" && exit 1"
   },
   "devDependencies": {
     "@types/node": "^22.5.5",
     "typescript": "^5.5.3",
-    "vite": "^5.4.1"
-  },
-  "dependencies": {
+    "vite": "^5.4.1",
     "path": "^0.12.7"
   }
 }

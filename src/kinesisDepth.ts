@@ -44,7 +44,6 @@ class KinesisDepth {
     const computedStyle = window.getComputedStyle(this.container);
     this.initialTransform =
       computedStyle.transform === "none" ? "" : computedStyle.transform;
-
     this.init();
   }
 
@@ -60,6 +59,7 @@ class KinesisDepth {
     this.container.style.perspective = `${this.perspective}px`;
     this.container.style.transformStyle = "preserve-3d";
     this.container.style.position = "relative";
+    this.container.style.transition = `transform ${this.options.duration}ms ${this.options.easing}`;
 
     if (this.isActive) {
       this.bindHoverEvents();
