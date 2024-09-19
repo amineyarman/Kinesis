@@ -8,7 +8,7 @@ class KinesisTransformerElement {
   axis: AxisType[];
   initialTransform: string;
 
-  constructor(element: HTMLElement, transformType: TransformType) {
+  constructor(element: HTMLElement) {
     if (!element.hasAttribute("data-kinesistransformer-element")) {
       throw new Error(
         "Element does not have the 'data-kinesistransformer-element' attribute."
@@ -16,10 +16,14 @@ class KinesisTransformerElement {
     }
 
     this.element = element;
+
+    // Read the transform type directly from the element's attribute
+    this.type =
+      (element.getAttribute("data-ks-transform") as TransformType) ||
+      "translate";
     this.strength = parseFloat(
       element.getAttribute("data-ks-strength") || "10"
     );
-    this.type = transformType || "translate";
     this.axis = parseAxes(element.getAttribute("data-ks-axis") || "X, Y");
 
     const computedStyle = window.getComputedStyle(this.element);
