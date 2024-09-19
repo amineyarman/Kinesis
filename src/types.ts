@@ -55,4 +55,6 @@ export interface KinesisDistanceItemOptions {
   startDistance?: number;
   velocity?: VelocityType;
   transformType?: TransformType;
+  duration?: number;
+  easing?: string;
 }

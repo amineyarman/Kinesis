@@ -13,6 +13,8 @@ class KinesisDistanceItem {
   private mouseX: number = 0;
   private mouseY: number = 0;
   private animationId: number | null = null;
+  private duration: number;
+  private easing: string;
 
   constructor(element: HTMLElement, options: KinesisDistanceItemOptions = {}) {
     if (!element.hasAttribute("data-kinesisdistance-item")) {
@@ -44,6 +46,15 @@ class KinesisDistanceItem {
         "translate",
     } as Required<KinesisDistanceItemOptions>;
 
+    // Reading new attributes or setting default values
+    this.duration = parseInt(
+      element.getAttribute("data-ks-duration") || "1000",
+      10
+    );
+    this.easing =
+      element.getAttribute("data-ks-easing") ||
+      "cubic-bezier(0.23, 1, 0.32, 1)";
+
     this.isActive = this.options.active;
 
     const computedStyle = window.getComputedStyle(this.element);
@@ -52,7 +63,8 @@ class KinesisDistanceItem {
 
     this.element.style.transformOrigin = this.options.transformOrigin;
     this.element.style.transform = this.initialTransform;
-    this.element.style.transition = `transform 0.2s ease-out`;
+    // Use the new duration and easing
+    this.element.style.transition = `transform ${this.duration}ms ${this.easing}`;
 
     if (this.isActive) {
       this.bindEvents();
