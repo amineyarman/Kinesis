@@ -7,7 +7,7 @@ class KinesisPath {
   elements: KinesisPathElement[] = [];
   options: Required<KinesisPathOptions>;
   isActive: boolean;
-  interaction: "move" | "scroll"; // Shouldn't allow undefined anymore
+  interaction: "mouse" | "scroll";
   pathLength: number;
 
   constructor(container: HTMLElement, options: KinesisPathOptions = {}) {
@@ -27,11 +27,11 @@ class KinesisPath {
       path: options.path || container.getAttribute("data-path") || "",
       interaction:
         options.interaction ||
-        (container.getAttribute("data-interaction") as "move" | "scroll") ||
-        "move", // Default to "move"
+        (container.getAttribute("data-interaction") as "mouse" | "scroll") ||
+        "mouse",
     };
     this.isActive = this.options.active!;
-    this.interaction = this.options.interaction; // Will be "move" or "scroll", no undefined
+    this.interaction = this.options.interaction;
 
     if (!this.options.path) {
       throw new Error("No path data provided for KinesisPath.");
@@ -54,7 +54,7 @@ class KinesisPath {
     this.container.style.position = "relative";
 
     if (this.isActive) {
-      if (this.interaction === "move") {
+      if (this.interaction === "mouse") {
         this.bindMoveEvents();
       } else if (this.interaction === "scroll") {
         this.bindScrollEvents();

@@ -29,7 +29,7 @@ function initializeKinesis() {
       interaction:
         element.getAttribute("data-interaction") === "scroll"
           ? "scroll"
-          : "move",
+          : "mouse",
     };
 
     new KinesisTransformer(element, options);
@@ -112,7 +112,7 @@ function initializeKinesis() {
       interaction:
         element.getAttribute("data-interaction") === "scroll"
           ? "scroll"
-          : "move",
+          : "mouse",
     };
 
     new KinesisPath(element, options);

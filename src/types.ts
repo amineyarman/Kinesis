@@ -8,7 +8,7 @@ export interface KinesisTransformerOptions {
   active?: boolean;
   duration?: number;
   easing?: string;
-  interaction?: "move" | "scroll";
+  interaction?: "mouse" | "scroll";
 }
 
 export interface KinesisDepthOptions {
@@ -45,7 +45,7 @@ export interface KinesisPathOptions {
   duration?: number;
   easing?: string;
   path?: string;
-  interaction?: "move" | "scroll";
+  interaction?: "mouse" | "scroll";
 }
 
 export interface KinesisDistanceItemOptions {

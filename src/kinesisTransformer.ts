@@ -9,7 +9,7 @@ class KinesisTransformer {
   isActive: boolean;
   initialTransform: string;
   transformType: TransformType;
-  interaction: "move" | "scroll";
+  interaction: "mouse" | "scroll";
   observer: IntersectionObserver | null = null;
 
   constructor(container: HTMLElement, options: KinesisTransformerOptions = {}) {
@@ -24,10 +24,10 @@ class KinesisTransformer {
       active: options.active !== undefined ? options.active : true,
       duration: options.duration || 1000,
       easing: options.easing || "cubic-bezier(0.23, 1, 0.32, 1)",
-      interaction: options.interaction || "move",
+      interaction: options.interaction || "mouse",
     };
     this.isActive = this.options.active!;
-    this.interaction = this.options.interaction as "move" | "scroll";
+    this.interaction = this.options.interaction as "mouse" | "scroll";
 
     const transformAttr = container.getAttribute("data-transform");
     if (
@@ -66,7 +66,7 @@ class KinesisTransformer {
       this.container.style.transformStyle = "preserve-3d";
     }
 
-    if (this.interaction === "move") {
+    if (this.interaction === "mouse") {
       this.bindMoveEvents();
     } else if (this.interaction === "scroll") {
       this.setupScrollInteraction();
