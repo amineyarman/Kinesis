@@ -5,9 +5,9 @@ class KinesisPathElement {
   pathLength: number;
 
   constructor(element: HTMLElement, pathLength: number) {
-    if (!element.hasAttribute("data-pathelement")) {
+    if (!element.hasAttribute("data-kinesispath-element")) {
       throw new Error(
-        "Element does not have the 'data-pathelement' attribute."
+        "Element does not have the 'data-kinesispath-element' attribute."
       );
     }
 
