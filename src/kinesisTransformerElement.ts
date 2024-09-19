@@ -17,7 +17,6 @@ class KinesisTransformerElement {
 
     this.element = element;
 
-    // Read the transform type directly from the element's attribute
     this.type =
       (element.getAttribute("data-ks-transform") as TransformType) ||
       "translate";

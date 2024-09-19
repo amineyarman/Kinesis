@@ -46,7 +46,7 @@ class KinesisPath {
   init() {
     const children = Array.from(this.container.children) as HTMLElement[];
     children.forEach((child) => {
-      if (child.hasAttribute("data-ks-pathelement")) {
+      if (child.hasAttribute("data-kinesispath-element")) {
         const pathElement = new KinesisPathElement(child, this.pathLength);
         this.elements.push(pathElement);
       }

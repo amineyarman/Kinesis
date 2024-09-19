@@ -1,0 +1,253 @@
+<!DOCTYPE html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>Kinesis.js Demo</title>
+    <style>
+      body {
+        font-family: Arial, sans-serif;
+        padding: 20px;
+        background-color: #f5f5f5;
+      }
+
+      .demo-section {
+        margin-bottom: 40px;
+      }
+
+      .container {
+        position: relative;
+        width: 300px;
+        height: 300px;
+        border: 1px solid #ccc;
+        margin: 0 auto;
+      }
+
+      .depth-element {
+        width: 100px;
+        height: 100px;
+        background-color: rgba(255, 99, 71, 0.6);
+        position: absolute;
+        top: 50%;
+        left: 50%;
+        transform: translate(-50%, -50%);
+      }
+
+      .transform-element {
+        width: 100px;
+        height: 100px;
+        background-color: rgba(0, 128, 255, 0.6);
+        position: absolute;
+        top: 50%;
+        left: 50%;
+        transform: translate(-50%, -50%);
+      }
+
+      h3 {
+        text-align: center;
+        margin-bottom: 10px;
+      }
+
+      .scroll-item-container {
+        display: flex;
+        justify-content: center;
+        align-items: center;
+        flex-direction: column;
+      }
+
+      .path-container {
+        position: relative;
+        width: 100%;
+        height: 600px;
+        margin: 100px auto;
+        border: 1px solid #ccc;
+        overflow: visible;
+      }
+
+      .path-element {
+        width: 50px;
+        height: 50px;
+        background-color: coral;
+        border-radius: 50%;
+        position: absolute;
+        top: 0;
+        left: 0;
+      }
+
+      /* Optional: Visualize the path */
+      .path-visualization {
+        position: absolute;
+        top: 0;
+        left: 0;
+        width: 100%;
+        height: 100%;
+        pointer-events: none;
+      }
+
+      .path-visualization svg {
+        width: 100%;
+        height: 100%;
+      }
+    </style>
+  </head>
+  <body>
+    <div class="demo-section">
+      <h3>Simple Depth Effect</h3>
+      <div class="container" data-kinesisdepth>
+        <div
+          class="depth-element"
+          data-kinesisdepth-element
+          data-ks-depth="-20"
+        ></div>
+        <div
+          class="depth-element"
+          data-kinesisdepth-element
+          data-ks-depth="-40"
+        ></div>
+        <div
+          class="depth-element"
+          data-kinesisdepth-element
+          data-ks-depth="-60"
+        ></div>
+      </div>
+    </div>
+
+    <div class="demo-section">
+      <h3>Translate on Scroll on X and Y Axes</h3>
+      <div
+        class="container"
+        data-kinesistransformer
+        data-ks-interaction="scroll"
+      >
+        <div
+          class="transform-element"
+          data-kinesistransformer-element
+          data-ks-strength="30"
+          data-ks-transform="rotate"
+          data-ks-axis="Z"
+        ></div>
+        <div
+          class="transform-element"
+          data-kinesistransformer-element
+          data-ks-strength="-60"
+          data-ks-transform="rotate"
+          data-ks-axis="Z"
+        ></div>
+        <div
+          class="transform-element"
+          data-kinesistransformer-element
+          data-ks-strength="90"
+          data-ks-transform="rotate"
+          data-ks-axis="Z"
+        ></div>
+      </div>
+    </div>
+
+    <section class="demo-section">
+      <h3>Standalone scroll item</h3>
+      <div class="scroll-item-container container">
+        <div
+          class="scroll-item"
+          data-kinesisscroll-item
+          data-ks-transform="scale"
+          data-ks-axis="X, Y"
+          data-ks-strength="100"
+          style="background-color: lightgreen; width: 50px; height: 50px"
+        ></div>
+      </div>
+    </section>
+
+    <div class="demo-section">
+      <h3>Translate on X and Y Axes</h3>
+      <div class="container" data-kinesistransformer>
+        <div
+          class="transform-element"
+          data-kinesistransformer-element
+          data-ks-strength="30"
+        ></div>
+        <div
+          class="transform-element"
+          data-kinesistransformer-element
+          data-ks-strength="-60"
+        ></div>
+        <div
+          class="transform-element"
+          data-kinesistransformer-element
+          data-ks-strength="90"
+        ></div>
+      </div>
+    </div>
+
+    <section class="demo-section">
+      <div
+        class="path-container"
+        data-kinesispath
+        data-ks-path="M 100,300 C 200,100 400,500 500,300"
+        data-ks-duration="100"
+        data-ks-interaction="scroll"
+      >
+        <!-- Visualize the path using SVG -->
+        <div class="path-visualization">
+          <svg>
+            <path
+              d="M 100,300 C 200,100 400,500 500,300"
+              stroke="#ddd"
+              fill="none"
+              stroke-width="2"
+            />
+          </svg>
+        </div>
+
+        <!-- Path Elements -->
+        <div
+          class="path-element"
+          data-kinesispath-element
+          data-ks-strength="1"
+          data-ks-offset="0"
+        ></div>
+        <div
+          class="path-element"
+          data-kinesispath-element
+          data-ks-strength="0.5"
+          data-ks-offset="50"
+          style="background-color: lightblue"
+        ></div>
+      </div>
+
+      <div
+        class="path-container"
+        data-kinesispath
+        data-ks-path="M 100,300 C 200,100 400,500 500,300"
+      >
+        <!-- Visualize the path using SVG -->
+        <div class="path-visualization">
+          <svg>
+            <path
+              d="M 100,300 C 200,100 400,500 500,300"
+              stroke="#ddd"
+              fill="none"
+              stroke-width="2"
+            />
+          </svg>
+        </div>
+
+        <!-- Path Elements -->
+        <div
+          class="path-element"
+          data-kinesispath-element
+          data-ks-strength="1"
+          data-ks-offset="0"
+        ></div>
+        <div
+          class="path-element"
+          data-kinesispath-element
+          data-ks-strength="0.5"
+          data-ks-offset="0"
+          style="background-color: lightblue"
+        ></div>
+      </div>
+    </section>
+
+    <script type="module" src="/src/main.ts"></script>
+  </body>
+</html>

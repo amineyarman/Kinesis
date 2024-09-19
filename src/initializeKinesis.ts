@@ -121,6 +121,7 @@ function initializeKinesis() {
   const pathElements =
     document.querySelectorAll<HTMLElement>("[data-kinesispath]");
   pathElements.forEach((element) => {
+    console.log(element);
     const options: KinesisPathOptions = {
       active: element.getAttribute("data-ks-active") !== "false",
       duration: parseInt(
