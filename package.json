@@ -1,0 +1,36 @@
+{
+  "name": "kinesis.js",
+  "version": "1.0.0",
+  "description": "A library for interactive animations using Kinesis elements.",
+  "main": "dist/index.js",
+  "module": "dist/index.js",
+  "types": "dist/index.d.ts",
+  "files": [
+    "dist"
+  ],
+  "keywords": [
+    "kinesis",
+    "animation",
+    "interactive",
+    "transformations"
+  ],
+  "author": "Your Name <your.email@example.com>",
+  "license": "MIT",
+  "repository": {
+    "type": "git",
+    "url": "https://github.com/yourusername/kinesis.js.git"
+  },
+  "scripts": {
+    "dev": "vite",
+    "build": "tsc && vite build",
+    "preview": "vite preview",
+    "prepare": "npm run build",
+    "prepublishOnly": "npm test"
+  },
+  "devDependencies": {
+    "typescript": "^5.5.3",
+    "vite": "^5.4.1"
+  },
+  "peerDependencies": {},
+  "dependencies": {}
+}
