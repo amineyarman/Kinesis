@@ -33,7 +33,8 @@
         transform: translate(-50%, -50%);
       }
 
-      .transform-element {
+      .transform-element,
+      .audio-element {
         width: 100px;
         height: 100px;
         background-color: rgba(0, 128, 255, 0.6);
@@ -87,6 +88,110 @@
       .path-visualization svg {
         width: 100%;
         height: 100%;
+      }
+
+      /* Audio Elements */
+      .container[data-kinesisaudio] {
+        width: 600px;
+        height: 400px;
+        margin: 0 auto 20px;
+        position: relative;
+        background-color: #d0d0d0;
+        border: 1px solid #ccc;
+        transform-style: preserve-3d;
+        transition: transform 1s cubic-bezier(0.23, 1, 0.32, 1);
+        box-shadow: 0 10px 30px rgba(0, 0, 0, 0.1);
+      }
+
+      .container[data-kinesisaudio] div[data-audioelement] {
+        position: absolute;
+        width: 100px;
+        height: 100px;
+        background-color: coral;
+        top: 50%;
+        left: 50%;
+        transform: translate(-50%, -50%) translateZ(0);
+        transform-origin: center;
+        transform-style: preserve-3d;
+        box-shadow: 0 5px 15px rgba(0, 0, 0, 0.2);
+        transition: transform 0.1s ease-out;
+      }
+
+      .container[data-kinesisaudio] div[data-audioelement]:nth-child(1) {
+        background-color: coral;
+      }
+
+      .container[data-kinesisaudio] div[data-audioelement]:nth-child(2) {
+        background-color: lightblue;
+      }
+
+      .container[data-kinesisaudio] div[data-audioelement]:nth-child(3) {
+        background-color: lightgreen;
+      }
+
+      .container[data-kinesisaudio] div[data-audioelement].large {
+        width: 150px;
+        height: 150px;
+      }
+
+      /* Play and Stop Buttons */
+      .container[data-kinesisaudio] button {
+        position: absolute;
+        bottom: 20px;
+        left: 50%;
+        transform: translateX(-50%);
+        padding: 10px 20px;
+        margin: 5px;
+        background-color: #555;
+        color: #fff;
+        border: none;
+        cursor: pointer;
+        border-radius: 5px;
+      }
+
+      .container[data-kinesisaudio] button:hover {
+        background-color: #777;
+      }
+
+      .distance-grid {
+        display: grid;
+        grid-template-columns: repeat(10, 50px);
+        grid-template-rows: repeat(10, 50px);
+        gap: 10px;
+        justify-content: center;
+        align-items: center;
+        padding: 50px;
+        background-color: #f0f0f0;
+        min-height: 300vh;
+      }
+
+      /* Individual grid items */
+      .distance-item {
+        width: 50px;
+        height: 50px;
+        background-color: #3498db;
+        border-radius: 30%; /* Makes them circles */
+        transition: transform 0.2s ease-out;
+        cursor: pointer;
+      }
+
+      /* Optional: Hover effect to indicate interactivity */
+      .distance-item:hover {
+      }
+
+      /* Responsive adjustments */
+      @media (max-width: 600px) {
+        .distance-grid {
+          grid-template-columns: repeat(10, -100px);
+          grid-template-rows: repeat(10, -100px);
+          gap: 5px;
+          padding: 20px;
+        }
+
+        .distance-item {
+          width: -100px;
+          height: -100px;
+        }
       }
     </style>
   </head>
@@ -248,6 +353,61 @@
       </div>
     </section>
 
+    <div class="demo-section">
+      <h3>Simple Audio Effect</h3>
+      <div
+        class="container"
+        id="audio-demo-1"
+        data-kinesisaudio
+        data-ks-audio="audio.mp3"
+        data-ks-playaudio="false"
+      >
+        <div
+          class="audio-element"
+          data-kinesisaudio-element
+          data-ks-audioindex="60"
+          data-ks-strength="50"
+          data-ks-type="scale"
+        ></div>
+        <div
+          class="audio-element"
+          data-kinesisaudio-element
+          data-ks-audioindex="80"
+          data-ks-strength="50"
+          data-ks-type="scale"
+        ></div>
+        <div
+          class="audio-element"
+          data-kinesisaudio-element
+          data-ks-audioindex="100"
+          data-ks-strength="50"
+          data-ks-type="scale"
+        ></div>
+      </div>
+      <div class="control-buttons">
+        <button id="play-audio-demo-1">Play Audio</button>
+        <button id="stop-audio-demo-1">Stop Audio</button>
+      </div>
+    </div>
+
     <script type="module" src="/src/main.ts"></script>
+
+    <script>
+      window.addEventListener("DOMContentLoaded", () => {
+        // Handle Play and Stop buttons for Audio Demo 1
+        const playButton1 = document.getElementById("play-audio-demo-1");
+        const stopButton1 = document.getElementById("stop-audio-demo-1");
+        const container1 = document.getElementById("audio-demo-1");
+        const kinesisAudio1 = container1._kinesisAudio;
+
+        if (playButton1 && kinesisAudio1) {
+          playButton1.addEventListener("click", () => kinesisAudio1.play());
+        }
+
+        if (stopButton1 && kinesisAudio1) {
+          stopButton1.addEventListener("click", () => kinesisAudio1.stop());
+        }
+      });
+    </script>
   </body>
 </html>

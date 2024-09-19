@@ -1,6 +1,5 @@
-import { KinesisAudioOptions, AxisType } from "./types";
+import { KinesisAudioOptions } from "./types";
 import KinesisAudioElement from "./kinesisAudioElement";
-import { parseAxes } from "./utils";
 
 class KinesisAudio {
   container: HTMLElement;
@@ -11,7 +10,6 @@ class KinesisAudio {
   perspective: number;
   audioSrc: string;
   playAudio: boolean;
-  axis: AxisType[];
   audioContext: AudioContext | null = null;
   analyser: AnalyserNode | null = null;
   dataArray: Uint8Array | null = null;
@@ -36,14 +34,12 @@ class KinesisAudio {
       perspective: options.perspective ?? 1000,
       audio: options.audio,
       playAudio: options.playAudio ?? false,
-      axis: options.axis ?? "X, Y",
     } as Required<KinesisAudioOptions>;
 
     this.isActive = this.options.active;
     this.perspective = this.options.perspective;
     this.audioSrc = this.options.audio;
     this.playAudio = this.options.playAudio;
-    this.axis = parseAxes(this.options.axis);
 
     const computedStyle = window.getComputedStyle(this.container);
     this.initialTransform =
@@ -56,6 +52,8 @@ class KinesisAudio {
     const children = Array.from(this.container.children) as HTMLElement[];
     children.forEach((child) => {
       if (child.hasAttribute("data-kinesisaudio-element")) {
+        console.log("audio");
+
         const audioElement = new KinesisAudioElement(child);
         this.elements.push(audioElement);
       }
