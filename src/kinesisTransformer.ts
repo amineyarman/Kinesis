@@ -29,13 +29,13 @@ class KinesisTransformer {
     this.isActive = this.options.active!;
     this.interaction = this.options.interaction as "mouse" | "scroll";
 
-    const transformAttr = container.getAttribute("data-transform");
+    const transformAttr = container.getAttribute("data-ks-transform");
     if (
       !transformAttr ||
       !["translate", "rotate", "scale"].includes(transformAttr)
     ) {
       console.warn(
-        `Container does not have a valid 'data-transform' attribute. Defaulting to 'translate'.`
+        `Container does not have a valid 'data-ks-transform' attribute. Defaulting to 'translate'.`
       );
     }
     this.transformType = (transformAttr as TransformType) || "translate";
@@ -50,7 +50,7 @@ class KinesisTransformer {
   init() {
     const children = Array.from(this.container.children) as HTMLElement[];
     children.forEach((child) => {
-      if (child.hasAttribute("data-transformerelement")) {
+      if (child.hasAttribute("data-kinesistransformer-element")) {
         const kinesisElement = new KinesisTransformerElement(
           child,
           this.transformType

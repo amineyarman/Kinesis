@@ -22,12 +22,16 @@ function initializeKinesis() {
   );
   transformerElements.forEach((element) => {
     const options: KinesisTransformerOptions = {
-      active: element.getAttribute("data-active") !== "false",
-      duration: parseInt(element.getAttribute("data-duration") || "1000", 10),
+      active: element.getAttribute("data-ks-active") !== "false",
+      duration: parseInt(
+        element.getAttribute("data-ks-duration") || "1000",
+        10
+      ),
       easing:
-        element.getAttribute("data-easing") || "cubic-bezier(0.23, 1, 0.32, 1)",
+        element.getAttribute("data-ks-easing") ||
+        "cubic-bezier(0.23, 1, 0.32, 1)",
       interaction:
-        element.getAttribute("data-interaction") === "scroll"
+        element.getAttribute("data-ks-interaction") === "scroll"
           ? "scroll"
           : "mouse",
     };
@@ -41,18 +45,22 @@ function initializeKinesis() {
   );
   depthElements.forEach((element) => {
     const options: KinesisDepthOptions = {
-      active: element.getAttribute("data-active") !== "false",
-      duration: parseInt(element.getAttribute("data-duration") || "1000", 10),
+      active: element.getAttribute("data-ks-active") !== "false",
+      duration: parseInt(
+        element.getAttribute("data-ks-duration") || "1000",
+        10
+      ),
       easing:
-        element.getAttribute("data-easing") || "cubic-bezier(0.23, 1, 0.32, 1)",
+        element.getAttribute("data-ks-easing") ||
+        "cubic-bezier(0.23, 1, 0.32, 1)",
       perspective: parseInt(
-        element.getAttribute("data-perspective") || "1000",
+        element.getAttribute("data-ks-perspective") || "1000",
         10
       ),
       sensitivity: parseFloat(
-        element.getAttribute("data-sensitivity") || "100"
+        element.getAttribute("data-ks-sensitivity") || "100"
       ),
-      inverted: element.getAttribute("data-inverted") === "true",
+      inverted: element.getAttribute("data-ks-invert") === "true",
     };
 
     new KinesisDepth(element, options);
@@ -64,37 +72,46 @@ function initializeKinesis() {
   );
   audioElements.forEach((element) => {
     const options: KinesisAudioOptions = {
-      active: element.getAttribute("data-active") !== "false",
-      duration: parseInt(element.getAttribute("data-duration") || "1000", 10),
-      easing:
-        element.getAttribute("data-easing") || "cubic-bezier(0.23, 1, 0.32, 1)",
-      tag: element.getAttribute("data-tag") || "div",
-      perspective: parseInt(
-        element.getAttribute("data-perspective") || "1000",
+      active: element.getAttribute("data-ks-active") !== "false",
+      duration: parseInt(
+        element.getAttribute("data-ks-duration") || "1000",
         10
       ),
-      audio: element.getAttribute("data-audio") || "",
-      playAudio: element.getAttribute("data-playaudio") === "true",
-      axis: element.getAttribute("data-axis") || "X, Y",
+      easing:
+        element.getAttribute("data-ks-easing") ||
+        "cubic-bezier(0.23, 1, 0.32, 1)",
+      tag: element.getAttribute("data-ks-tag") || "div",
+      perspective: parseInt(
+        element.getAttribute("data-ks-perspective") || "1000",
+        10
+      ),
+      audio: element.getAttribute("data-ks-audio") || "",
+      playAudio: element.getAttribute("data-ks-playaudio") === "true",
+      axis: element.getAttribute("data-ks-axis") || "X, Y",
     };
 
     new KinesisAudio(element, options);
   });
 
   // Initialize KinesisScrollItem
-  const scrollItems =
-    document.querySelectorAll<HTMLElement>("[data-scrollitem]");
+  const scrollItems = document.querySelectorAll<HTMLElement>(
+    "[data-kinesisscroll-item]"
+  );
   scrollItems.forEach((element) => {
     const options: KinesisScrollItemOptions = {
-      active: element.getAttribute("data-active") !== "false",
-      duration: parseInt(element.getAttribute("data-duration") || "1000", 10),
+      active: element.getAttribute("data-ks-active") !== "false",
+      duration: parseInt(
+        element.getAttribute("data-ks-duration") || "1000",
+        10
+      ),
       easing:
-        element.getAttribute("data-easing") || "cubic-bezier(0.23, 1, 0.32, 1)",
+        element.getAttribute("data-ks-easing") ||
+        "cubic-bezier(0.23, 1, 0.32, 1)",
       transformType:
-        (element.getAttribute("data-transform") as TransformType) ||
+        (element.getAttribute("data-ks-transform") as TransformType) ||
         "translate",
-      axis: element.getAttribute("data-axis") || "Y",
-      strength: parseFloat(element.getAttribute("data-strength") || "10"),
+      axis: element.getAttribute("data-ks-axis") || "Y",
+      strength: parseFloat(element.getAttribute("data-ks-strength") || "10"),
     };
 
     new KinesisScrollItem(element, options);
@@ -105,12 +122,15 @@ function initializeKinesis() {
     document.querySelectorAll<HTMLElement>("[data-kinesispath]");
   pathElements.forEach((element) => {
     const options: KinesisPathOptions = {
-      active: element.getAttribute("data-active") !== "false",
-      duration: parseInt(element.getAttribute("data-duration") || "1000", 10),
-      easing: element.getAttribute("data-easing") || "ease",
-      path: element.getAttribute("data-path") || "",
+      active: element.getAttribute("data-ks-active") !== "false",
+      duration: parseInt(
+        element.getAttribute("data-ks-duration") || "1000",
+        10
+      ),
+      easing: element.getAttribute("data-ks-easing") || "ease",
+      path: element.getAttribute("data-ks-path") || "",
       interaction:
-        element.getAttribute("data-interaction") === "scroll"
+        element.getAttribute("data-ks-interaction") === "scroll"
           ? "scroll"
           : "mouse",
     };
@@ -120,21 +140,22 @@ function initializeKinesis() {
 
   // Initialize KinesisDistanceItem
   const distanceItems = document.querySelectorAll<HTMLElement>(
-    "[data-kinesisdistanceitem]"
+    "[data-kinesisdistance-item]"
   );
   distanceItems.forEach((element) => {
     const options: KinesisDistanceItemOptions = {
-      active: element.getAttribute("data-active") !== "false",
-      strength: parseFloat(element.getAttribute("data-strength") || "20"),
-      transformOrigin: element.getAttribute("data-transformorigin") || "center",
+      active: element.getAttribute("data-ks-active") !== "false",
+      strength: parseFloat(element.getAttribute("data-ks-strength") || "20"),
+      transformOrigin:
+        element.getAttribute("data-ks-transformorigin") || "center",
       startDistance: parseInt(
-        element.getAttribute("data-startdistance") || "100",
+        element.getAttribute("data-ks-startdistance") || "100",
         10
       ),
       velocity:
-        (element.getAttribute("data-velocity") as VelocityType) || "linear",
+        (element.getAttribute("data-ks-velocity") as VelocityType) || "linear",
       transformType:
-        (element.getAttribute("data-transform") as TransformType) ||
+        (element.getAttribute("data-ks-transform") as TransformType) ||
         "translate",
     };
 

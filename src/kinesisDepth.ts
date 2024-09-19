@@ -50,7 +50,7 @@ class KinesisDepth {
   init() {
     const children = Array.from(this.container.children) as HTMLElement[];
     children.forEach((child) => {
-      if (child.hasAttribute("data-depth-element")) {
+      if (child.hasAttribute("data-kinesisdepth-element")) {
         const depthElement = new KinesisDepthElement(child);
         this.elements.push(depthElement);
       }

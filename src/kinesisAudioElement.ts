@@ -9,19 +9,23 @@ class KinesisAudioElement {
   initialTransform: string;
 
   constructor(element: HTMLElement) {
-    if (!element.hasAttribute("data-audioelement")) {
+    if (!element.hasAttribute("data-kinesisaudio-element")) {
       throw new Error(
-        "Element does not have the 'data-audioelement' attribute."
+        "Element does not have the 'data-kinesisaudio-element' attribute."
       );
     }
 
     this.element = element;
-    this.audioIndex = parseInt(element.getAttribute("data-audioindex") || "50");
-    this.strength = parseFloat(element.getAttribute("data-strength") || "10");
+    this.audioIndex = parseInt(
+      element.getAttribute("data-ks-audioindex") || "50"
+    );
+    this.strength = parseFloat(
+      element.getAttribute("data-ks-strength") || "10"
+    );
     this.type =
-      (element.getAttribute("data-type") as TransformType) || "translate";
+      (element.getAttribute("data-ks-type") as TransformType) || "translate";
     this.transformOrigin =
-      element.getAttribute("data-transformorigin") || "center";
+      element.getAttribute("data-ks-transformorigin") || "center";
 
     const computedStyle = window.getComputedStyle(this.element);
     this.initialTransform =

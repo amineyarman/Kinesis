@@ -15,9 +15,9 @@ class KinesisDistanceItem {
   private animationId: number | null = null;
 
   constructor(element: HTMLElement, options: KinesisDistanceItemOptions = {}) {
-    if (!element.hasAttribute("data-kinesisdistanceitem")) {
+    if (!element.hasAttribute("data-kinesisdistance-item")) {
       throw new Error(
-        "Element does not have the 'data-kinesisdistanceitem' attribute."
+        "Element does not have the 'data-kinesisdistance-item' attribute."
       );
     }
 
@@ -30,14 +30,17 @@ class KinesisDistanceItem {
       startDistance:
         options.startDistance !== undefined
           ? options.startDistance
-          : parseInt(element.getAttribute("data-startdistance") || "100", 10),
+          : parseInt(
+              element.getAttribute("data-ks-startdistance") || "100",
+              10
+            ),
       velocity:
         (options.velocity as VelocityType) ||
-        (element.getAttribute("data-velocity") as VelocityType) ||
+        (element.getAttribute("data-ks-velocity") as VelocityType) ||
         "linear",
       transformType:
         (options.transformType as TransformType) ||
-        (element.getAttribute("data-transform") as TransformType) ||
+        (element.getAttribute("data-ks-transform") as TransformType) ||
         "translate",
     } as Required<KinesisDistanceItemOptions>;
 

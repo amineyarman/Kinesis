@@ -9,16 +9,18 @@ class KinesisTransformerElement {
   initialTransform: string;
 
   constructor(element: HTMLElement, transformType: TransformType) {
-    if (!element.hasAttribute("data-transformerelement")) {
+    if (!element.hasAttribute("data-kinesistransformer-element")) {
       throw new Error(
-        "Element does not have the 'data-transformerelement' attribute."
+        "Element does not have the 'data-kinesistransformer-element' attribute."
       );
     }
 
     this.element = element;
-    this.strength = parseFloat(element.getAttribute("data-strength") || "10");
+    this.strength = parseFloat(
+      element.getAttribute("data-ks-strength") || "10"
+    );
     this.type = transformType || "translate";
-    this.axis = parseAxes(element.getAttribute("data-axis") || "X, Y");
+    this.axis = parseAxes(element.getAttribute("data-ks-axis") || "X, Y");
 
     const computedStyle = window.getComputedStyle(this.element);
     this.initialTransform =

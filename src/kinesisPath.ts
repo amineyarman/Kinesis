@@ -22,12 +22,13 @@ class KinesisPath {
       active: options.active !== undefined ? options.active : true,
       duration:
         options.duration ||
-        parseInt(container.getAttribute("data-duration") || "1000"),
-      easing: options.easing || container.getAttribute("data-easing") || "ease",
-      path: options.path || container.getAttribute("data-path") || "",
+        parseInt(container.getAttribute("data-ks-duration") || "1000"),
+      easing:
+        options.easing || container.getAttribute("data-ks-easing") || "ease",
+      path: options.path || container.getAttribute("data-ks-path") || "",
       interaction:
         options.interaction ||
-        (container.getAttribute("data-interaction") as "mouse" | "scroll") ||
+        (container.getAttribute("data-ks-interaction") as "mouse" | "scroll") ||
         "mouse",
     };
     this.isActive = this.options.active!;
@@ -45,7 +46,7 @@ class KinesisPath {
   init() {
     const children = Array.from(this.container.children) as HTMLElement[];
     children.forEach((child) => {
-      if (child.hasAttribute("data-pathelement")) {
+      if (child.hasAttribute("data-ks-pathelement")) {
         const pathElement = new KinesisPathElement(child, this.pathLength);
         this.elements.push(pathElement);
       }

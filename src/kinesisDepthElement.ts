@@ -4,14 +4,14 @@ class KinesisDepthElement {
   initialTransform: string;
 
   constructor(element: HTMLElement) {
-    if (!element.hasAttribute("data-depth-element")) {
+    if (!element.hasAttribute("data-kinesisdepth-element")) {
       throw new Error(
-        "Element does not have the 'data-depth-element' attribute."
+        "Element does not have the 'data-kinesisdepth-element' attribute."
       );
     }
 
     this.element = element;
-    this.depth = parseFloat(element.getAttribute("data-depth") || "10");
+    this.depth = parseFloat(element.getAttribute("data-ks-depth") || "10");
 
     const computedStyle = window.getComputedStyle(this.element);
     this.initialTransform =

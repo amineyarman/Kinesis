@@ -12,8 +12,10 @@ class KinesisScrollItem {
   observer: IntersectionObserver | null = null;
 
   constructor(element: HTMLElement, options: KinesisScrollItemOptions = {}) {
-    if (!element.hasAttribute("data-scrollitem")) {
-      throw new Error("Element does not have the 'data-scrollitem' attribute.");
+    if (!element.hasAttribute("data-kinesisscroll-item")) {
+      throw new Error(
+        "Element does not have the 'data-kinesisscroll-item' attribute."
+      );
     }
 
     this.element = element;
@@ -21,20 +23,20 @@ class KinesisScrollItem {
       active: options.active !== undefined ? options.active : true,
       duration:
         options.duration ||
-        parseInt(element.getAttribute("data-duration") || "1000"),
+        parseInt(element.getAttribute("data-ks-duration") || "1000"),
       easing:
         options.easing ||
-        element.getAttribute("data-easing") ||
+        element.getAttribute("data-ks-easing") ||
         "cubic-bezier(0.23, 1, 0.32, 1)",
       transformType:
         options.transformType ||
-        (element.getAttribute("data-transform") as TransformType) ||
+        (element.getAttribute("data-ks-transform") as TransformType) ||
         "translate",
-      axis: options.axis || element.getAttribute("data-axis") || "Y",
+      axis: options.axis || element.getAttribute("data-ks-axis") || "Y",
       strength:
         options.strength !== undefined
           ? options.strength
-          : parseFloat(element.getAttribute("data-strength") || "10"),
+          : parseFloat(element.getAttribute("data-ks-strength") || "10"),
     };
     this.isActive = this.options.active!;
     this.transformType = this.options.transformType!;

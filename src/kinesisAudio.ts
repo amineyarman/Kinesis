@@ -55,7 +55,7 @@ class KinesisAudio {
   init() {
     const children = Array.from(this.container.children) as HTMLElement[];
     children.forEach((child) => {
-      if (child.hasAttribute("data-audioelement")) {
+      if (child.hasAttribute("data-kinesisaudio-element")) {
         const audioElement = new KinesisAudioElement(child);
         this.elements.push(audioElement);
       }

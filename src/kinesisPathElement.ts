@@ -12,18 +12,20 @@ class KinesisPathElement {
     }
 
     this.element = element;
-    this.strength = parseFloat(element.getAttribute("data-strength") || "1");
-    this.initialOffset = parseFloat(element.getAttribute("data-offset") || "0");
+    this.strength = parseFloat(element.getAttribute("data-ks-strength") || "1");
+    this.initialOffset = parseFloat(
+      element.getAttribute("data-ks-offset") || "0"
+    );
     this.pathLength = pathLength;
 
     const parentElement = this.element.parentElement as HTMLElement;
-    const pathData = parentElement.getAttribute("data-path") || "";
+    const pathData = parentElement.getAttribute("data-ks-path") || "";
 
     this.element.style.offsetPath = `path('${pathData}')`;
     this.element.style.offsetDistance = `${this.initialOffset}%`;
     this.element.style.transition = `offset-distance ${
-      parentElement.getAttribute("data-duration") || "1000"
-    }ms ${parentElement.getAttribute("data-easing") || "ease"}`;
+      parentElement.getAttribute("data-ks-duration") || "1000"
+    }ms ${parentElement.getAttribute("data-ks-easing") || "ease"}`;
   }
 
   updatePosition(progress: number) {
