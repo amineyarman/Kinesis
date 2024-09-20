@@ -49,14 +49,13 @@ class KinesisAudio {
   }
 
   init() {
-    const children = Array.from(this.container.children) as HTMLElement[];
-    children.forEach((child) => {
-      if (child.hasAttribute("data-kinesisaudio-element")) {
-        console.log("audio");
+    const children = this.container.querySelectorAll(
+      "[data-kinesisaudio-element]"
+    ) as NodeListOf<HTMLElement>;
 
-        const audioElement = new KinesisAudioElement(child);
-        this.elements.push(audioElement);
-      }
+    children.forEach((child) => {
+      const audioElement = new KinesisAudioElement(child);
+      this.elements.push(audioElement);
     });
 
     this.container.style.perspective = `${this.perspective}px`;

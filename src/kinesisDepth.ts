@@ -47,12 +47,13 @@ class KinesisDepth {
   }
 
   init() {
-    const children = Array.from(this.container.children) as HTMLElement[];
+    const children = this.container.querySelectorAll(
+      "[data-kinesisdepth-element]"
+    ) as NodeListOf<HTMLElement>;
+
     children.forEach((child) => {
-      if (child.hasAttribute("data-kinesisdepth-element")) {
-        const depthElement = new KinesisDepthElement(child);
-        this.elements.push(depthElement);
-      }
+      const depthElement = new KinesisDepthElement(child);
+      this.elements.push(depthElement);
     });
 
     this.container.style.perspective = `${this.perspective}px`;

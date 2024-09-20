@@ -42,13 +42,14 @@ class KinesisTransformer {
   }
 
   init() {
-    const children = Array.from(this.container.children) as HTMLElement[];
+    const children = this.container.querySelectorAll(
+      "[data-kinesistransformer-element]"
+    ) as NodeListOf<HTMLElement>;
+
     children.forEach((child) => {
-      if (child.hasAttribute("data-kinesistransformer-element")) {
-        const kinesisElement = new KinesisTransformerElement(child);
-        child.style.transition = `transform ${this.options.duration}ms ${this.options.easing}`;
-        this.elements.push(kinesisElement);
-      }
+      const kinesisElement = new KinesisTransformerElement(child);
+      child.style.transition = `transform ${this.options.duration}ms ${this.options.easing}`;
+      this.elements.push(kinesisElement);
     });
 
     const usesZAxis = this.elements.some((el) => el.axis.includes("Z"));
