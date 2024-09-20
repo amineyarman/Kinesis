@@ -38,9 +38,13 @@ class KinesisScrollItem {
           ? options.strength
           : parseFloat(element.getAttribute("data-ks-strength") || "10"),
     };
+
+    // Set transformType, axis, and strength
     this.isActive = this.options.active!;
     this.transformType = this.options.transformType!;
-    this.axis = parseAxes(this.options.axis!);
+    this.axis = parseAxes(
+      this.options.axis! || (this.transformType === "rotate" ? "Z" : "X, Y")
+    );
     this.strength = this.options.strength!;
 
     const computedStyle = window.getComputedStyle(this.element);
@@ -109,14 +113,14 @@ class KinesisScrollItem {
         break;
       }
       case "rotate": {
+        // Use rotate3d to handle rotation on all axes
         const rotateX = axis.includes("X") ? value : 0;
         const rotateY = axis.includes("Y") ? value : 0;
         const rotateZ = axis.includes("Z") ? value : 0;
-        transformValue = "";
-        if (axis.includes("X")) transformValue += ` rotateX(${rotateX}deg)`;
-        if (axis.includes("Y")) transformValue += ` rotateY(${rotateY}deg)`;
-        if (axis.includes("Z")) transformValue += ` rotateZ(${rotateZ}deg)`;
-        transformValue = transformValue.trim();
+
+        transformValue = `rotate3d(${rotateX !== 0 ? 1 : 0}, ${
+          rotateY !== 0 ? 1 : 0
+        }, ${rotateZ !== 0 ? 1 : 0}, ${rotateX || rotateY || rotateZ}deg)`;
         break;
       }
       case "scale": {

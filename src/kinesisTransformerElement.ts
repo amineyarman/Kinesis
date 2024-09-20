@@ -23,7 +23,12 @@ class KinesisTransformerElement {
     this.strength = parseFloat(
       element.getAttribute("data-ks-strength") || "10"
     );
-    this.axis = parseAxes(element.getAttribute("data-ks-axis") || "X, Y");
+
+    // If the transform type is rotate and no axis is provided, default to Z axis
+    const axisAttribute =
+      element.getAttribute("data-ks-axis") ||
+      (this.type === "rotate" ? "Z" : "X, Y");
+    this.axis = parseAxes(axisAttribute);
 
     const computedStyle = window.getComputedStyle(this.element);
     this.initialTransform =
@@ -44,14 +49,15 @@ class KinesisTransformerElement {
         break;
       }
       case "rotate": {
+        // Use rotate3d to handle rotation on all axes
         const rotateX = axis.includes("X") ? y * strength : 0;
         const rotateY = axis.includes("Y") ? x * strength : 0;
         const rotateZ = axis.includes("Z") ? (x + y) * strength : 0;
-        transformValue = "";
-        if (axis.includes("X")) transformValue += ` rotateX(${rotateX}deg)`;
-        if (axis.includes("Y")) transformValue += ` rotateY(${rotateY}deg)`;
-        if (axis.includes("Z")) transformValue += ` rotateZ(${rotateZ}deg)`;
-        transformValue = transformValue.trim();
+
+        // Rotate based on the provided axes using rotate3d
+        transformValue = `rotate3d(${rotateX !== 0 ? 1 : 0}, ${
+          rotateY !== 0 ? 1 : 0
+        }, ${rotateZ !== 0 ? 1 : 0}, ${rotateX || rotateY || rotateZ}deg)`;
         break;
       }
       case "scale": {
@@ -67,6 +73,7 @@ class KinesisTransformerElement {
         transformValue = `rotateX(${-rotateY}deg) rotateY(${rotateX}deg) translate3d(0,0,${
           strength * 2
         }px)`;
+        break;
       }
     }
 
