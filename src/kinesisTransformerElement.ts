@@ -75,6 +75,14 @@ class KinesisTransformerElement {
         }px)`;
         break;
       }
+      case "tilt_inv": {
+        const rotateY = axis.includes("X") ? y : 0;
+        const rotateX = axis.includes("Y") ? x : 0;
+        transformValue = `rotateX(${rotateY}deg) rotateY(${-rotateX}deg) translate3d(0,0,${
+          strength * 2
+        }px)`;
+        break;
+      }
     }
 
     this.element.style.transform =

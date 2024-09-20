@@ -1,6 +1,11 @@
 export type AxisType = "X" | "Y" | "Z";
 
-export type TransformType = "translate" | "rotate" | "scale" | "tilt";
+export type TransformType =
+  | "translate"
+  | "rotate"
+  | "scale"
+  | "tilt"
+  | "tilt_inv";
 
 export type VelocityType = "linear" | "acceleration" | "deceleration";
 
