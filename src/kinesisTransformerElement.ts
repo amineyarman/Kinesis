@@ -7,6 +7,7 @@ class KinesisTransformerElement {
   type: TransformType;
   axis: AxisType[];
   initialTransform: string;
+  transformOrigin: string;
 
   constructor(element: HTMLElement) {
     if (!element.hasAttribute("data-kinesistransformer-element")) {
@@ -17,19 +18,30 @@ class KinesisTransformerElement {
 
     this.element = element;
 
+    // Get the transform type, defaulting to "translate"
     this.type =
       (element.getAttribute("data-ks-transform") as TransformType) ||
       "translate";
+
+    // Get the strength value or default to 10
     this.strength = parseFloat(
       element.getAttribute("data-ks-strength") || "10"
     );
 
-    // If the transform type is rotate and no axis is provided, default to Z axis
+    // Get the axis or default to Z axis for "rotate", otherwise "X, Y"
     const axisAttribute =
       element.getAttribute("data-ks-axis") ||
       (this.type === "rotate" ? "Z" : "X, Y");
     this.axis = parseAxes(axisAttribute);
 
+    // Get the transform origin, defaulting to "center center"
+    this.transformOrigin =
+      element.getAttribute("data-ks-transformOrigin") || "center center";
+
+    // Apply the transform-origin to the element
+    this.element.style.transformOrigin = this.transformOrigin;
+
+    // Get the initial transform style of the element
     const computedStyle = window.getComputedStyle(this.element);
     this.initialTransform =
       computedStyle.transform === "none" ? "" : computedStyle.transform;
@@ -85,11 +97,13 @@ class KinesisTransformerElement {
       }
     }
 
+    // Apply the final transform
     this.element.style.transform =
       `${this.initialTransform} ${transformValue}`.trim();
   }
 
   resetTransform() {
+    // Reset the element's transform to its initial state
     this.element.style.transform = this.initialTransform;
   }
 }
