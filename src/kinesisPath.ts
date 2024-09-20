@@ -25,7 +25,9 @@ class KinesisPath {
         options.duration ||
         parseInt(container.getAttribute("data-ks-duration") || "300"),
       easing:
-        options.easing || container.getAttribute("data-ks-easing") || "ease",
+        options.easing ||
+        container.getAttribute("data-ks-easing") ||
+        "cubic-bezier(0.23, 1, 0.32, 1)",
       path: options.path || container.getAttribute("data-ks-path") || "",
       interaction:
         options.interaction ||

@@ -13,6 +13,7 @@ class KinesisDepth {
   inverted: boolean;
   observer: IntersectionObserver | null = null;
   throttleDuration: number;
+  isMouseInside: boolean = false; // Track whether the mouse is inside the container
 
   constructor(container: HTMLElement, options: KinesisDepthOptions = {}) {
     if (!container.hasAttribute("data-kinesisdepth")) {
@@ -83,12 +84,15 @@ class KinesisDepth {
   }
 
   onMouseEnter = () => {
+    this.isMouseInside = true; // Mark that the mouse is inside the container
     this.elements.forEach((element) => {
       element.applyDepth(element.depth);
     });
   };
 
   onMouseMove = (event: MouseEvent) => {
+    if (!this.isMouseInside) return; // Skip if the mouse has already left
+
     const pos = getMousePosition(event, this.container);
     const rotateX = pos.y * this.sensitivity * (this.inverted ? -1 : 1);
     const rotateY = pos.x * this.sensitivity * (this.inverted ? -1 : 1);
@@ -97,10 +101,18 @@ class KinesisDepth {
   };
 
   onMouseLeave = () => {
+    this.isMouseInside = false; // Mark that the mouse has left the container
+
+    // Reset the container's transform
     this.container.style.transform = this.initialTransform;
+
+    // Reset the depth for each element
     this.elements.forEach((element) => {
       element.resetDepth();
     });
+
+    // Remove any pending throttled events
+    this.container.removeEventListener("mousemove", this.onMouseMove);
   };
 }
 

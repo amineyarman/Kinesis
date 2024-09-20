@@ -25,7 +25,10 @@ class KinesisPathElement {
     this.element.style.offsetDistance = `${this.initialOffset}%`;
     this.element.style.transition = `offset-distance ${
       parentElement.getAttribute("data-ks-duration") || "1000"
-    }ms ${parentElement.getAttribute("data-ks-easing") || "ease"}`;
+    }ms ${
+      parentElement.getAttribute("data-ks-easing") ||
+      "cubic-bezier(0.23, 1, 0.32, 1)"
+    }`;
   }
 
   updatePosition(progress: number) {

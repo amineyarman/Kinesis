@@ -12,6 +12,7 @@ class KinesisTransformer {
   observer: IntersectionObserver | null = null;
   perspective: string;
   throttleDuration: number;
+  isMouseInside: boolean = false; // To track mouse inside state
 
   constructor(container: HTMLElement, options: KinesisTransformerOptions = {}) {
     if (!container.hasAttribute("data-kinesistransformer")) {
@@ -82,10 +83,17 @@ class KinesisTransformer {
         throttle(this.onMouseMove, this.throttleDuration)
       );
       this.container.addEventListener("mouseleave", this.onMouseLeave);
+      this.container.addEventListener("mouseenter", this.onMouseEnter);
     }
   }
 
+  onMouseEnter = () => {
+    this.isMouseInside = true; // Mark that the mouse is inside the container
+  };
+
   onMouseMove = (event: MouseEvent) => {
+    if (!this.isMouseInside) return; // Skip if the mouse has already left
+
     const pos = getMousePosition(event, this.container);
 
     this.elements.forEach((element) => {
@@ -94,9 +102,13 @@ class KinesisTransformer {
   };
 
   onMouseLeave = () => {
+    this.isMouseInside = false; // Mark that the mouse has left the container
     this.elements.forEach((element) => {
       element.resetTransform();
     });
+
+    // Remove any pending throttled events
+    this.container.removeEventListener("mousemove", this.onMouseMove);
   };
 
   setupScrollInteraction() {
