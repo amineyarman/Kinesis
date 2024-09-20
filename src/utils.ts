@@ -5,10 +5,19 @@ export function clamp(value: number, min: number, max: number): number {
 }
 
 export function getMousePosition(event: MouseEvent, element: HTMLElement) {
-  const rect = element.getBoundingClientRect();
+  const rect = element.getBoundingClientRect(); // Get the element's bounding box
+
+  // Calculate the relative position of the mouse with respect to the center of the element
+  const relativeX = event.clientX - rect.left - rect.width / 2;
+  const relativeY = event.clientY - rect.top - rect.height / 2;
+
+  // Normalize the values based on half the width and height
+  const normalizedX = relativeX / (rect.width / 2);
+  const normalizedY = relativeY / (rect.height / 2);
+
   return {
-    x: (event.clientX - rect.left) / rect.width - 0.5,
-    y: (event.clientY - rect.top) / rect.height - 0.5,
+    x: normalizedX,
+    y: normalizedY,
   };
 }
 

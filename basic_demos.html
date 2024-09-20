@@ -193,12 +193,26 @@
           height: -100px;
         }
       }
+
+      .tilt-container {
+        display: flex;
+        justify-content: center;
+        align-items: center;
+        flex-direction: column;
+        height: 400px;
+      }
+
+      .tilt-container div {
+        height: 200px;
+        width: 200px;
+        background-color: #3498db;
+      }
     </style>
   </head>
   <body>
     <div class="demo-section">
       <h3>Simple Depth Effect</h3>
-      <div class="container" data-kinesisdepth>
+      <div class="container" data-kinesisdepth data-ks-sensitivity="10">
         <div
           class="depth-element"
           data-kinesisdepth-element
@@ -268,17 +282,17 @@
         <div
           class="transform-element"
           data-kinesistransformer-element
+          data-ks-strength="10"
+        ></div>
+        <div
+          class="transform-element"
+          data-kinesistransformer-element
+          data-ks-strength="-20"
+        ></div>
+        <div
+          class="transform-element"
+          data-kinesistransformer-element
           data-ks-strength="30"
-        ></div>
-        <div
-          class="transform-element"
-          data-kinesistransformer-element
-          data-ks-strength="-60"
-        ></div>
-        <div
-          class="transform-element"
-          data-kinesistransformer-element
-          data-ks-strength="90"
         ></div>
       </div>
     </div>
@@ -387,6 +401,24 @@
       <div class="control-buttons">
         <button id="play-audio-demo-1">Play Audio</button>
         <button id="stop-audio-demo-1">Stop Audio</button>
+      </div>
+    </div>
+
+    <div>
+      <div data-kinesistransformer class="tilt-container">
+        <div data-kinesistransformer-element data-ks-transform="tilt">
+          Hello
+        </div>
+        <div data-kinesistransformer-element data-ks-transform="tilt">
+          Hello
+        </div>
+        <div
+          data-kinesistransformer-element
+          data-ks-transform="tilt"
+          data-ks-strength="50"
+        >
+          Hello
+        </div>
       </div>
     </div>
 

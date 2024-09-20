@@ -10,6 +10,7 @@ class KinesisTransformer {
   initialTransform: string;
   interaction: "mouse" | "scroll";
   observer: IntersectionObserver | null = null;
+  perspective: string;
 
   constructor(container: HTMLElement, options: KinesisTransformerOptions = {}) {
     if (!container.hasAttribute("data-kinesistransformer")) {
@@ -19,6 +20,11 @@ class KinesisTransformer {
     }
 
     this.container = container;
+
+    // Reading data-ks-perspective or defaulting to '1000px'
+    this.perspective =
+      container.getAttribute("data-ks-perspective") || "1000px";
+
     this.options = {
       active: options.active !== undefined ? options.active : true,
       duration: options.duration || 1000,
@@ -46,8 +52,10 @@ class KinesisTransformer {
     });
 
     const usesZAxis = this.elements.some((el) => el.axis.includes("Z"));
-    if (usesZAxis) {
-      this.container.style.perspective = "1000px";
+
+    // Set perspective if elements use Z axis or if the perspective is explicitly set
+    if (usesZAxis || this.perspective) {
+      this.container.style.perspective = this.perspective;
       this.container.style.transformStyle = "preserve-3d";
     }
 
