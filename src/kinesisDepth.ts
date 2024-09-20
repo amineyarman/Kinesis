@@ -1,6 +1,6 @@
 import { KinesisDepthOptions } from "./types";
 import KinesisDepthElement from "./kinesisDepthElement";
-import { getMousePosition } from "./utils";
+import { getMousePosition, throttle } from "./utils";
 
 class KinesisDepth {
   container: HTMLElement;
@@ -12,6 +12,7 @@ class KinesisDepth {
   sensitivity: number;
   inverted: boolean;
   observer: IntersectionObserver | null = null;
+  throttleDuration: number;
 
   constructor(container: HTMLElement, options: KinesisDepthOptions = {}) {
     if (!container.hasAttribute("data-kinesisdepth")) {
@@ -34,6 +35,12 @@ class KinesisDepth {
       sensitivity: options.sensitivity !== undefined ? options.sensitivity : 10,
       inverted: options.inverted !== undefined ? options.inverted : false,
     } as Required<KinesisDepthOptions>;
+
+    // Set throttle duration from data-ks-throttle or default to 100ms
+    this.throttleDuration = parseInt(
+      container.getAttribute("data-ks-throttle") || "100",
+      10
+    );
 
     this.isActive = this.options.active;
     this.perspective = this.options.perspective;
@@ -68,7 +75,10 @@ class KinesisDepth {
 
   bindHoverEvents() {
     this.container.addEventListener("mouseenter", this.onMouseEnter);
-    this.container.addEventListener("mousemove", this.onMouseMove);
+    this.container.addEventListener(
+      "mousemove",
+      throttle(this.onMouseMove, this.throttleDuration)
+    );
     this.container.addEventListener("mouseleave", this.onMouseLeave);
   }
 

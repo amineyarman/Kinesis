@@ -1,5 +1,5 @@
 import { KinesisScrollItemOptions, AxisType, TransformType } from "./types";
-import { parseAxes, clamp } from "./utils";
+import { parseAxes, clamp, throttle } from "./utils";
 
 class KinesisScrollItem {
   element: HTMLElement;
@@ -10,6 +10,7 @@ class KinesisScrollItem {
   axis: AxisType[];
   strength: number;
   observer: IntersectionObserver | null = null;
+  throttleDuration: number;
 
   constructor(element: HTMLElement, options: KinesisScrollItemOptions = {}) {
     if (!element.hasAttribute("data-kinesisscroll-item")) {
@@ -38,6 +39,12 @@ class KinesisScrollItem {
           ? options.strength
           : parseFloat(element.getAttribute("data-ks-strength") || "10"),
     };
+
+    // Set throttle duration from data-ks-throttle or default to 100ms
+    this.throttleDuration = parseInt(
+      element.getAttribute("data-ks-throttle") || "100",
+      10
+    );
 
     // Set transformType, axis, and strength
     this.isActive = this.options.active!;
@@ -81,7 +88,11 @@ class KinesisScrollItem {
   }
 
   startScrollAnimation() {
-    window.addEventListener("scroll", this.onScroll);
+    // Apply throttle to scroll event
+    window.addEventListener(
+      "scroll",
+      throttle(this.onScroll, this.throttleDuration)
+    );
     this.onScroll();
   }
 
@@ -113,7 +124,6 @@ class KinesisScrollItem {
         break;
       }
       case "rotate": {
-        // Use rotate3d to handle rotation on all axes
         const rotateX = axis.includes("X") ? value : 0;
         const rotateY = axis.includes("Y") ? value : 0;
         const rotateZ = axis.includes("Z") ? value : 0;

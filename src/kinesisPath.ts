@@ -1,6 +1,6 @@
 import { KinesisPathOptions } from "./types";
 import KinesisPathElement from "./kinesisPathElement";
-import { clamp, getMousePosition } from "./utils";
+import { clamp, getMousePosition, throttle } from "./utils";
 
 class KinesisPath {
   container: HTMLElement;
@@ -9,6 +9,7 @@ class KinesisPath {
   isActive: boolean;
   interaction: "mouse" | "scroll";
   pathLength: number;
+  throttleDuration: number;
 
   constructor(container: HTMLElement, options: KinesisPathOptions = {}) {
     if (!container.hasAttribute("data-kinesispath")) {
@@ -22,7 +23,7 @@ class KinesisPath {
       active: options.active !== undefined ? options.active : true,
       duration:
         options.duration ||
-        parseInt(container.getAttribute("data-ks-duration") || "1000"),
+        parseInt(container.getAttribute("data-ks-duration") || "300"),
       easing:
         options.easing || container.getAttribute("data-ks-easing") || "ease",
       path: options.path || container.getAttribute("data-ks-path") || "",
@@ -31,6 +32,13 @@ class KinesisPath {
         (container.getAttribute("data-ks-interaction") as "mouse" | "scroll") ||
         "mouse",
     };
+
+    // Set throttle duration from data-ks-throttle or default to 100ms
+    this.throttleDuration = parseInt(
+      container.getAttribute("data-ks-throttle") || "100",
+      10
+    );
+
     this.isActive = this.options.active!;
     this.interaction = this.options.interaction;
 
@@ -72,7 +80,11 @@ class KinesisPath {
   }
 
   bindMoveEvents() {
-    this.container.addEventListener("mousemove", this.onMouseMove);
+    // Apply throttle to mousemove event
+    this.container.addEventListener(
+      "mousemove",
+      throttle(this.onMouseMove, this.throttleDuration)
+    );
     this.container.addEventListener("mouseleave", this.onMouseLeave);
   }
 
@@ -92,7 +104,11 @@ class KinesisPath {
   };
 
   bindScrollEvents() {
-    window.addEventListener("scroll", this.onScroll);
+    // Apply throttle to scroll event
+    window.addEventListener(
+      "scroll",
+      throttle(this.onScroll, this.throttleDuration)
+    );
     this.onScroll();
   }
 

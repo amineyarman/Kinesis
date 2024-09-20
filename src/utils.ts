@@ -38,3 +38,27 @@ export function parseAxes(value: string): AxisType[] {
     validAxes.includes(axis as AxisType)
   ) as AxisType[];
 }
+
+export function throttle<T extends (...args: any[]) => void>(
+  func: T,
+  limit: number = 100
+): (...args: Parameters<T>) => void {
+  let lastFunc: NodeJS.Timeout;
+  let lastRan: number;
+
+  return function (this: ThisParameterType<T>, ...args: Parameters<T>) {
+    const context = this;
+    if (!lastRan) {
+      func.apply(context, args);
+      lastRan = Date.now();
+    } else {
+      clearTimeout(lastFunc);
+      lastFunc = setTimeout(function () {
+        if (Date.now() - lastRan >= limit) {
+          func.apply(context, args);
+          lastRan = Date.now();
+        }
+      }, limit - (Date.now() - lastRan));
+    }
+  };
+}
