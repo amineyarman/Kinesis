@@ -23,7 +23,7 @@ class KinesisPath {
       active: options.active !== undefined ? options.active : true,
       duration:
         options.duration ||
-        parseInt(container.getAttribute("data-ks-duration") || "300"),
+        parseInt(container.getAttribute("data-ks-duration") || "800"),
       easing:
         options.easing ||
         container.getAttribute("data-ks-easing") ||
@@ -35,7 +35,6 @@ class KinesisPath {
         "mouse",
     };
 
-    // Set throttle duration from data-ks-throttle or default to 100ms
     this.throttleDuration = parseInt(
       container.getAttribute("data-ks-throttle") || "100",
       10
@@ -82,7 +81,6 @@ class KinesisPath {
   }
 
   bindMoveEvents() {
-    // Apply throttle to mousemove event
     this.container.addEventListener(
       "mousemove",
       throttle(this.onMouseMove, this.throttleDuration)
@@ -92,7 +90,7 @@ class KinesisPath {
 
   onMouseMove = (event: MouseEvent) => {
     const pos = getMousePosition(event, this.container);
-    const progress = (pos.x + 0.5) / 1;
+    const progress = (pos.x + 1) / 2;
 
     this.elements.forEach((element) => {
       element.updatePosition(progress);
@@ -101,12 +99,11 @@ class KinesisPath {
 
   onMouseLeave = () => {
     this.elements.forEach((element) => {
-      element.resetPosition();
+      element.resetPosition(this.throttleDuration);
     });
   };
 
   bindScrollEvents() {
-    // Apply throttle to scroll event
     window.addEventListener(
       "scroll",
       throttle(this.onScroll, this.throttleDuration)
