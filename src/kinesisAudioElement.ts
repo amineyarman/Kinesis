@@ -1,3 +1,5 @@
+// kinesisAudioElement.ts
+
 import { TransformType } from "./types";
 
 class KinesisAudioElement {
@@ -7,6 +9,9 @@ class KinesisAudioElement {
   type: TransformType;
   transformOrigin: string;
   initialTransform: string;
+
+  // Track the previous value to determine if the frequency is increasing or decreasing
+  private previousValue: number = 0;
 
   constructor(element: HTMLElement) {
     if (!element.hasAttribute("data-kinesisaudio-element")) {
@@ -33,7 +38,10 @@ class KinesisAudioElement {
 
     this.element.style.transformOrigin = this.transformOrigin;
     this.element.style.transform = this.initialTransform;
-    this.element.style.transition = `transform 0.1s ease-out`;
+
+    // Initialize CSS variables for dynamic transition durations
+    this.element.style.setProperty("--transform-duration", "0.1s");
+    this.element.style.transition = `transform var(--transform-duration) ease-out`;
   }
 
   applyTransform(value: number) {
@@ -54,18 +62,36 @@ class KinesisAudioElement {
         break;
       }
       case "scale": {
-        const scale = 1 + value * strength * 0.01;
+        const scale = 1 + value * strength * 0.1;
         transformValue = `scale(${scale})`;
         break;
       }
     }
 
+    // Determine if the frequency is increasing or decreasing
+    const isRising = value > this.previousValue;
+
+    // Set transition duration based on the frequency change
+    if (isRising) {
+      // Quick rise
+      this.element.style.setProperty("--transform-duration", "0.05s");
+    } else {
+      // Slow decay
+      this.element.style.setProperty("--transform-duration", "0.3s");
+    }
+
+    // Update the transform
     this.element.style.transform =
       `${this.initialTransform} ${transformValue}`.trim();
+
+    // Update the previous value
+    this.previousValue = value;
   }
 
   resetTransform() {
+    this.element.style.setProperty("--transform-duration", "0.5s"); // Slow reset
     this.element.style.transform = this.initialTransform;
+    this.previousValue = 0;
   }
 }
 

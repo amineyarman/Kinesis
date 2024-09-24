@@ -1,3 +1,5 @@
+// kinesisAudio.ts
+
 import { KinesisAudioOptions } from "./types";
 import KinesisAudioElement from "./kinesisAudioElement";
 
@@ -16,6 +18,10 @@ class KinesisAudio {
   source: MediaElementAudioSourceNode | null = null;
   audioElement: HTMLAudioElement | null = null;
   animationId: number | null = null;
+
+  // Smoothing parameters
+  private smoothingFactor: number = 0.8; // Adjust between 0 (no smoothing) and 1 (max smoothing)
+  private smoothedData: Uint8Array | null = null;
 
   constructor(container: HTMLElement, options: KinesisAudioOptions) {
     if (!container.hasAttribute("data-kinesisaudio")) {
@@ -72,8 +78,11 @@ class KinesisAudio {
       (window as any).webkitAudioContext)();
     this.analyser = this.audioContext.createAnalyser();
     this.analyser.fftSize = 256;
+    this.analyser.smoothingTimeConstant = this.smoothingFactor; // Apply smoothing
+
     const bufferLength = this.analyser.frequencyBinCount;
     this.dataArray = new Uint8Array(bufferLength);
+    this.smoothedData = new Uint8Array(bufferLength);
 
     this.source = this.audioContext.createMediaElementSource(this.audioElement);
     this.source.connect(this.analyser);
@@ -107,17 +116,32 @@ class KinesisAudio {
   }
 
   animate() {
-    if (!this.analyser || !this.dataArray) return;
+    const step = () => {
+      this.animationId = requestAnimationFrame(step);
 
-    this.analyser.getByteFrequencyData(this.dataArray);
+      // Use non-null assertions
+      this.analyser!.getByteFrequencyData(this.dataArray!);
 
-    this.elements.forEach((element) => {
-      const frequencyValue = this.dataArray![element.audioIndex];
-      const normalizedValue = frequencyValue / 255;
-      element.applyTransform(normalizedValue);
-    });
+      // Apply smoothing manually
+      for (let i = 0; i < this.dataArray!.length; i++) {
+        this.smoothedData![i] =
+          this.smoothedData![i] * this.smoothingFactor +
+          this.dataArray![i] * (1 - this.smoothingFactor);
+      }
 
-    this.animationId = requestAnimationFrame(() => this.animate());
+      // Normalize the smoothed data
+      const normalizedData = Array.from(this.smoothedData!).map(
+        (value) => value / 255
+      );
+
+      // Apply transforms to elements
+      this.elements.forEach((element) => {
+        const frequencyValue = normalizedData[element.audioIndex];
+        element.applyTransform(frequencyValue);
+      });
+    };
+
+    step();
   }
 
   resetTransforms() {
