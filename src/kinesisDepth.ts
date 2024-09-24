@@ -85,12 +85,15 @@ class KinesisDepth {
 
   onMouseEnter = () => {
     this.isMouseInside = true; // Mark that the mouse is inside the container
+    console.log("enter");
     this.elements.forEach((element) => {
       element.applyDepth(element.depth);
     });
   };
 
   onMouseMove = (event: MouseEvent) => {
+    console.log("moving");
+
     if (!this.isMouseInside) return; // Skip if the mouse has already left
 
     const pos = getMousePosition(event, this.container);
@@ -101,6 +104,8 @@ class KinesisDepth {
   };
 
   onMouseLeave = () => {
+    console.log("leave");
+
     this.isMouseInside = false; // Mark that the mouse has left the container
 
     // Reset the container's transform
