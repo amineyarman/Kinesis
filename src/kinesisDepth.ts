@@ -76,10 +76,7 @@ class KinesisDepth {
 
   bindHoverEvents() {
     this.container.addEventListener("mouseenter", this.onMouseEnter);
-    this.container.addEventListener(
-      "mousemove",
-      throttle(this.onMouseMove, this.throttleDuration)
-    );
+    this.container.addEventListener("mousemove", throttle(this.onMouseMove));
     this.container.addEventListener("mouseleave", this.onMouseLeave);
   }
 

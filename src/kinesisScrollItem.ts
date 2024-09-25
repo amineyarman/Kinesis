@@ -1,5 +1,9 @@
-import { KinesisScrollItemOptions, AxisType, TransformType } from "./types";
-import { parseAxes, clamp, throttle } from "./utils";
+import {
+  KinesisScrollItemOptions,
+  TransformAxisType,
+  TransformType,
+} from "./types";
+import { parseTransformAxes, clamp, throttle } from "./utils";
 
 class KinesisScrollItem {
   element: HTMLElement;
@@ -7,7 +11,7 @@ class KinesisScrollItem {
   isActive: boolean;
   initialTransform: string;
   transformType: TransformType;
-  axis: AxisType[];
+  axis: TransformAxisType[];
   strength: number;
   observer: IntersectionObserver | null = null;
   throttleDuration: number;
@@ -49,7 +53,7 @@ class KinesisScrollItem {
     // Set transformType, axis, and strength
     this.isActive = this.options.active!;
     this.transformType = this.options.transformType!;
-    this.axis = parseAxes(
+    this.axis = parseTransformAxes(
       this.options.axis! || (this.transformType === "rotate" ? "Z" : "X, Y")
     );
     this.strength = this.options.strength!;
@@ -89,10 +93,7 @@ class KinesisScrollItem {
 
   startScrollAnimation() {
     // Apply throttle to scroll event
-    window.addEventListener(
-      "scroll",
-      throttle(this.onScroll, this.throttleDuration)
-    );
+    window.addEventListener("scroll", throttle(this.onScroll));
     this.onScroll();
   }
 

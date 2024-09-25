@@ -212,7 +212,7 @@
   <body>
     <div class="demo-section">
       <h3>Simple Depth Effect</h3>
-      <div class="container" data-kinesisdepth data-ks-sensitivity="30
+      <div class="container" data-kinesisdepth data-ks-sensitivity="30">
         <div
           class="depth-element"
           data-kinesisdepth-element
@@ -243,21 +243,21 @@
           data-kinesistransformer-element
           data-ks-strength="30"
           data-ks-transform="rotate"
-          data-ks-axis="Z"
+          data-ks-transformAxis="Z"
         ></div>
         <div
           class="transform-element"
           data-kinesistransformer-element
           data-ks-strength="-60"
           data-ks-transform="rotate"
-          data-ks-axis="Z"
+          data-ks-transformAxis="Z"
         ></div>
         <div
           class="transform-element"
           data-kinesistransformer-element
           data-ks-strength="90"
           data-ks-transform="rotate"
-          data-ks-axis="Z"
+          data-ks-transformAxis="Z"
         ></div>
       </div>
     </div>
@@ -283,6 +283,7 @@
           class="transform-element"
           data-kinesistransformer-element
           data-ks-strength="10"
+          data-ks-transformAxis="X"
         ></div>
         <div
           class="transform-element"
@@ -293,6 +294,30 @@
           class="transform-element"
           data-kinesistransformer-element
           data-ks-strength="30"
+        ></div>
+      </div>
+    </div>
+
+    <div class="demo-section">
+      <h3>Translate on X and Y Axes</h3>
+      <div class="container" data-kinesistransformer>
+        <div
+          class="transform-element"
+          data-kinesistransformer-element
+          data-ks-strength="40"
+        ></div>
+        <div
+          class="transform-element"
+          data-kinesistransformer-element
+          data-ks-strength="10"
+          data-ks-transformAxis="X"
+        ></div>
+
+        <div
+          class="transform-element"
+          data-kinesistransformer-element
+          data-ks-strength="20"
+          data-ks-transformAxis="Y"
         ></div>
       </div>
     </div>

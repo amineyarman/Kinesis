@@ -1,4 +1,4 @@
-import { AxisType } from "./types";
+import { TransformAxisType } from "./types";
 
 export function clamp(value: number, min: number, max: number): number {
   return Math.min(Math.max(value, min), max);
@@ -31,34 +31,26 @@ export function getMousePositionDistance(event: MouseEvent): {
   };
 }
 
-export function parseAxes(value: string): AxisType[] {
+export function parseTransformAxes(value: string): TransformAxisType[] {
   const axes = value.split(",").map((axis) => axis.trim().toUpperCase());
-  const validAxes: AxisType[] = ["X", "Y", "Z"];
+  const validAxes: TransformAxisType[] = ["X", "Y", "Z"];
   return axes.filter((axis) =>
-    validAxes.includes(axis as AxisType)
-  ) as AxisType[];
+    validAxes.includes(axis as TransformAxisType)
+  ) as TransformAxisType[];
 }
 
 export function throttle<T extends (...args: any[]) => void>(
-  func: T,
-  limit: number = 100
+  func: T
 ): (...args: Parameters<T>) => void {
-  let lastFunc: NodeJS.Timeout;
-  let lastRan: number;
+  let ticking = false;
 
   return function (this: ThisParameterType<T>, ...args: Parameters<T>) {
-    const context = this;
-    if (!lastRan) {
-      func.apply(context, args);
-      lastRan = Date.now();
-    } else {
-      clearTimeout(lastFunc);
-      lastFunc = setTimeout(function () {
-        if (Date.now() - lastRan >= limit) {
-          func.apply(context, args);
-          lastRan = Date.now();
-        }
-      }, limit - (Date.now() - lastRan));
+    if (!ticking) {
+      requestAnimationFrame(() => {
+        func.apply(this, args);
+        ticking = false;
+      });
+      ticking = true;
     }
   };
 }

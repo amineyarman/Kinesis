@@ -81,10 +81,7 @@ class KinesisPath {
   }
 
   bindMoveEvents() {
-    this.container.addEventListener(
-      "mousemove",
-      throttle(this.onMouseMove, this.throttleDuration)
-    );
+    this.container.addEventListener("mousemove", throttle(this.onMouseMove));
     this.container.addEventListener("mouseleave", this.onMouseLeave);
   }
 
@@ -104,10 +101,7 @@ class KinesisPath {
   };
 
   bindScrollEvents() {
-    window.addEventListener(
-      "scroll",
-      throttle(this.onScroll, this.throttleDuration)
-    );
+    window.addEventListener("scroll", throttle(this.onScroll));
     this.onScroll();
   }
 

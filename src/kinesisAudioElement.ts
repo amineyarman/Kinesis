@@ -1,14 +1,14 @@
 // kinesisAudioElement.ts
 
-import { TransformType, AxisType } from "./types";
-import { parseAxes } from "./utils";
+import { TransformType, TransformAxisType } from "./types";
+import { parseTransformAxes } from "./utils";
 
 class KinesisAudioElement {
   element: HTMLElement;
   audioIndex: number;
   strength: number;
   type: TransformType;
-  axes: AxisType[];
+  axes: TransformAxisType[];
   transformOrigin: string;
   initialTransform: string;
 
@@ -37,7 +37,7 @@ class KinesisAudioElement {
     // Parse data-ks-axis attribute
     const axisAttr = element.getAttribute("data-ks-axis");
     if (axisAttr) {
-      this.axes = parseAxes(axisAttr);
+      this.axes = parseTransformAxes(axisAttr);
       if (this.axes.length === 0) {
         // If parsing results in no valid axes, fallback to defaults
         this.axes = this.getDefaultAxes();
@@ -65,7 +65,7 @@ class KinesisAudioElement {
   /**
    * Returns default axes based on the TransformType
    */
-  private getDefaultAxes(): AxisType[] {
+  private getDefaultAxes(): TransformAxisType[] {
     switch (this.type) {
       case "translate":
         return ["Y"];

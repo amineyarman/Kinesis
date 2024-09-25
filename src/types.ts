@@ -1,4 +1,6 @@
-export type AxisType = "X" | "Y" | "Z";
+export type TransformAxisType = "X" | "Y" | "Z";
+
+export type ConstraintAxisType = "X" | "Y";
 
 export type TransformType =
   | "translate"

@@ -1,4 +1,4 @@
-import { KinesisTransformerOptions, TransformType } from "./types";
+import { KinesisTransformerOptions } from "./types";
 import KinesisTransformerElement from "./kinesisTransformerElement";
 import { getMousePosition, clamp, throttle } from "./utils";
 
@@ -13,6 +13,7 @@ class KinesisTransformer {
   perspective: string;
   throttleDuration: number;
   isMouseInside: boolean = false; // To track mouse inside state
+  preserve3d: boolean;
 
   constructor(container: HTMLElement, options: KinesisTransformerOptions = {}) {
     if (!container.hasAttribute("data-kinesistransformer")) {
@@ -32,6 +33,10 @@ class KinesisTransformer {
       container.getAttribute("data-ks-throttle") || "100",
       10
     );
+
+    // Reading data-ks-preserve3d or defaulting to true
+    const preserve3dAttr = container.getAttribute("data-ks-preserve3d");
+    this.preserve3d = preserve3dAttr !== "false"; // Default to true
 
     this.options = {
       active: options.active !== undefined ? options.active : true,
@@ -60,12 +65,16 @@ class KinesisTransformer {
       this.elements.push(kinesisElement);
     });
 
-    const usesZAxis = this.elements.some((el) => el.axis.includes("Z"));
+    const usesZAxis = this.elements.some((el) =>
+      el.transformAxis.includes("Z")
+    );
 
     // Set perspective if elements use Z axis or if the perspective is explicitly set
-    if (usesZAxis || this.perspective) {
+    if ((usesZAxis || this.perspective) && this.preserve3d) {
       this.container.style.perspective = this.perspective;
       this.container.style.transformStyle = "preserve-3d";
+    } else {
+      this.container.style.transformStyle = "flat";
     }
 
     if (this.interaction === "mouse") {
@@ -78,10 +87,7 @@ class KinesisTransformer {
   bindMoveEvents() {
     if (this.isActive) {
       // Apply throttle to mousemove event
-      this.container.addEventListener(
-        "mousemove",
-        throttle(this.onMouseMove, this.throttleDuration)
-      );
+      this.container.addEventListener("mousemove", throttle(this.onMouseMove));
       this.container.addEventListener("mouseleave", this.onMouseLeave);
       this.container.addEventListener("mouseenter", this.onMouseEnter);
     }
@@ -134,10 +140,7 @@ class KinesisTransformer {
 
   startScrollAnimation() {
     // Apply throttle to scroll event
-    window.addEventListener(
-      "scroll",
-      throttle(this.onScroll, this.throttleDuration)
-    );
+    window.addEventListener("scroll", throttle(this.onScroll));
     this.onScroll();
   }
 
