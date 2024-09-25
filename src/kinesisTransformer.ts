@@ -74,7 +74,7 @@ class KinesisTransformer {
       this.container.style.perspective = this.perspective;
       this.container.style.transformStyle = "preserve-3d";
     } else {
-      this.container.style.transformStyle = "flat";
+      this.container.style.perspective = this.perspective;
     }
 
     if (this.interaction === "mouse") {
