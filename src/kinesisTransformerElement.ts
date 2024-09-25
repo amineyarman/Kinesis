@@ -3,12 +3,13 @@ import { parseTransformAxes } from "./utils";
 
 class KinesisTransformerElement {
   element: HTMLElement;
-  strength: number;
+  strength!: number; // Definite assignment assertion
   type: TransformType;
   transformAxis: TransformAxisType[];
   constraintAxis: ConstraintAxisType | null;
   initialTransform: string;
   transformOrigin: string;
+  mutationObserver: MutationObserver;
 
   constructor(element: HTMLElement) {
     if (!element.hasAttribute("data-kinesistransformer-element")) {
@@ -19,15 +20,13 @@ class KinesisTransformerElement {
 
     this.element = element;
 
+    // Initialize 'strength' before any method uses it
+    this.updateStrengthFromAttribute();
+
     // Get the transform type, defaulting to "translate"
     this.type =
       (element.getAttribute("data-ks-transform") as TransformType) ||
       "translate";
-
-    // Get the strength value or default to 10
-    this.strength = parseFloat(
-      element.getAttribute("data-ks-strength") || "10"
-    );
 
     // Get the transformAxis or default to Z axis for "rotate", otherwise "X, Y"
     const transformAxisAttribute =
@@ -61,9 +60,38 @@ class KinesisTransformerElement {
     const computedStyle = window.getComputedStyle(this.element);
     this.initialTransform =
       computedStyle.transform === "none" ? "" : computedStyle.transform;
+
+    // Set up MutationObserver to watch for changes to data-ks-strength
+    this.mutationObserver = new MutationObserver(this.handleAttributeChange);
+    this.mutationObserver.observe(this.element, {
+      attributes: true,
+      attributeFilter: ["data-ks-strength"],
+    });
   }
 
+  updateStrengthFromAttribute() {
+    const strengthAttr = this.element.getAttribute("data-ks-strength");
+    const parsedStrength = parseFloat(strengthAttr || "10");
+    this.strength = isNaN(parsedStrength) ? 10 : parsedStrength;
+  }
+
+  handleAttributeChange = (mutationsList: MutationRecord[]) => {
+    for (const mutation of mutationsList) {
+      if (
+        mutation.type === "attributes" &&
+        mutation.attributeName === "data-ks-strength"
+      ) {
+        this.updateStrengthFromAttribute();
+      }
+    }
+  };
+
   applyTransform(x: number, y: number) {
+    if (this.strength === 0) {
+      this.resetTransform();
+      return;
+    }
+
     let transformValue = "";
 
     const { strength, type, transformAxis, constraintAxis } = this;
@@ -149,6 +177,11 @@ class KinesisTransformerElement {
   resetTransform() {
     // Reset the element's transform to its initial state
     this.element.style.transform = this.initialTransform;
+  }
+
+  // Disconnect the observer when no longer needed
+  disconnectObserver() {
+    this.mutationObserver.disconnect();
   }
 }
 
