@@ -3,13 +3,13 @@ import { parseTransformAxes } from "./utils";
 
 class KinesisTransformerElement {
   element: HTMLElement;
-  strength!: number; // Definite assignment assertion
-  type: TransformType;
-  transformAxis: TransformAxisType[];
-  constraintAxis: ConstraintAxisType | null;
-  initialTransform: string;
-  transformOrigin: string;
-  mutationObserver: MutationObserver;
+  strength!: number;
+  type!: TransformType;
+  transformAxis!: TransformAxisType[];
+  constraintAxis!: ConstraintAxisType | null;
+  initialTransform!: string;
+  transformOrigin!: string;
+  mutationObserver!: MutationObserver;
 
   constructor(element: HTMLElement) {
     if (!element.hasAttribute("data-kinesistransformer-element")) {
@@ -20,22 +20,43 @@ class KinesisTransformerElement {
 
     this.element = element;
 
-    // Initialize 'strength' before any method uses it
-    this.updateStrengthFromAttribute();
+    this.updatePropertiesFromAttributes();
 
-    // Get the transform type, defaulting to "translate"
+    const computedStyle = window.getComputedStyle(this.element);
+    this.initialTransform =
+      computedStyle.transform === "none" ? "" : computedStyle.transform;
+
+    this.element.style.transformOrigin = this.transformOrigin;
+
+    this.mutationObserver = new MutationObserver(this.handleAttributeChange);
+    this.mutationObserver.observe(this.element, {
+      attributes: true,
+      attributeFilter: [
+        "data-ks-strength",
+        "data-ks-transform",
+        "data-ks-transformAxis",
+        "data-ks-constraintAxis",
+        "data-ks-transformOrigin",
+      ],
+    });
+  }
+
+  updatePropertiesFromAttributes() {
+    const strengthAttr = this.element.getAttribute("data-ks-strength");
+    const parsedStrength = parseFloat(strengthAttr || "10");
+    this.strength = isNaN(parsedStrength) ? 10 : parsedStrength;
+
     this.type =
-      (element.getAttribute("data-ks-transform") as TransformType) ||
+      (this.element.getAttribute("data-ks-transform") as TransformType) ||
       "translate";
 
-    // Get the transformAxis or default to Z axis for "rotate", otherwise "X, Y"
     const transformAxisAttribute =
-      element.getAttribute("data-ks-transformAxis") ||
+      this.element.getAttribute("data-ks-transformAxis") ||
       (this.type === "rotate" ? "Z" : "X, Y");
     this.transformAxis = parseTransformAxes(transformAxisAttribute);
 
-    // Get the constraint axis, accepts "X" or "Y", or null if not set
-    const constraintAxisAttribute = element.getAttribute(
+    // Update constraintAxis
+    const constraintAxisAttribute = this.element.getAttribute(
       "data-ks-constraintAxis"
     );
     this.constraintAxis = constraintAxisAttribute
@@ -44,69 +65,36 @@ class KinesisTransformerElement {
 
     // Validate constraintAxis
     if (this.constraintAxis && !["X", "Y"].includes(this.constraintAxis)) {
-      throw new Error(
+      console.warn(
         "Invalid value for data-ks-constraintAxis. Acceptable values are 'X' or 'Y'."
       );
+      this.constraintAxis = null;
     }
 
-    // Get the transform origin, defaulting to "center center"
     this.transformOrigin =
-      element.getAttribute("data-ks-transformOrigin") || "center center";
+      this.element.getAttribute("data-ks-transformOrigin") || "center center";
 
-    // Apply the transform-origin to the element
     this.element.style.transformOrigin = this.transformOrigin;
-
-    // Get the initial transform style of the element
-    const computedStyle = window.getComputedStyle(this.element);
-    this.initialTransform =
-      computedStyle.transform === "none" ? "" : computedStyle.transform;
-
-    // Set up MutationObserver to watch for changes to data-ks-strength
-    this.mutationObserver = new MutationObserver(this.handleAttributeChange);
-    this.mutationObserver.observe(this.element, {
-      attributes: true,
-      attributeFilter: ["data-ks-strength"],
-    });
   }
-
-  updateStrengthFromAttribute() {
-    const strengthAttr = this.element.getAttribute("data-ks-strength");
-    const parsedStrength = parseFloat(strengthAttr || "10");
-    this.strength = isNaN(parsedStrength) ? 10 : parsedStrength;
-  }
-
   handleAttributeChange = (mutationsList: MutationRecord[]) => {
     for (const mutation of mutationsList) {
-      if (
-        mutation.type === "attributes" &&
-        mutation.attributeName === "data-ks-strength"
-      ) {
-        this.updateStrengthFromAttribute();
+      if (mutation.type === "attributes") {
+        this.updatePropertiesFromAttributes();
       }
     }
   };
 
   applyTransform(x: number, y: number) {
-    if (this.strength === 0) {
-      this.resetTransform();
-      return;
-    }
-
     let transformValue = "";
 
     const { strength, type, transformAxis, constraintAxis } = this;
 
-    // Apply constraintAxis to x and y
     if (constraintAxis === "X") {
-      console.log("X");
       y = 0;
     } else if (constraintAxis === "Y") {
-      console.log("Y");
-
       x = 0;
     }
 
-    // Compensation factor for when only one axis contributes
     const compensationFactor = constraintAxis ? 2 : 1;
 
     switch (type) {
@@ -126,13 +114,7 @@ class KinesisTransformerElement {
         const rotateY = transformAxis.includes("Y") ? x * strength : 0;
         let rotateZ = 0;
         if (transformAxis.includes("Z")) {
-          if (constraintAxis === "X") {
-            y = x;
-          } else if (constraintAxis === "Y") {
-            x = y;
-          }
           const sumOfAxes = x + y;
-          console.log(x, y, sumOfAxes);
           rotateZ = sumOfAxes * compensationFactor * strength;
         }
 
@@ -178,17 +160,14 @@ class KinesisTransformerElement {
       }
     }
 
-    // Apply the final transform
     this.element.style.transform =
       `${this.initialTransform} ${transformValue}`.trim();
   }
 
   resetTransform() {
-    // Reset the element's transform to its initial state
     this.element.style.transform = this.initialTransform;
   }
 
-  // Disconnect the observer when no longer needed
   disconnectObserver() {
     this.mutationObserver.disconnect();
   }

@@ -44,6 +44,12 @@
         transform: translate(-50%, -50%);
       }
 
+      .nested-transform-element {
+        width: 100px;
+        height: 100px;
+        background-color: rgba(0, 128, 255, 0.6);
+      }
+
       h3 {
         text-align: center;
         margin-bottom: 10px;
@@ -326,12 +332,20 @@
       <h3>Translate on X and Y Axes</h3>
       <div class="container" data-kinesistransformer>
         <div
-          class="transform-element"
           data-kinesistransformer-element
+          data-ks-transform="translate"
           data-ks-strength="40"
-          data-ks-transform="rotate"
+          class="transform-element"
           data-ks-constraintAxis="X"
-        ></div>
+        >
+          <div
+            class="nested-transform-element"
+            data-kinesistransformer-element
+            data-ks-strength="40"
+            data-ks-transform="rotate"
+            data-ks-constraintAxis="X"
+          ></div>
+        </div>
       </div>
     </div>
 
