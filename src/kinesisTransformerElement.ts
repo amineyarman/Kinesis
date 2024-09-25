@@ -98,8 +98,11 @@ class KinesisTransformerElement {
 
     // Apply constraintAxis to x and y
     if (constraintAxis === "X") {
+      console.log("X");
       y = 0;
     } else if (constraintAxis === "Y") {
+      console.log("Y");
+
       x = 0;
     }
 
@@ -123,7 +126,13 @@ class KinesisTransformerElement {
         const rotateY = transformAxis.includes("Y") ? x * strength : 0;
         let rotateZ = 0;
         if (transformAxis.includes("Z")) {
+          if (constraintAxis === "X") {
+            y = x;
+          } else if (constraintAxis === "Y") {
+            x = y;
+          }
           const sumOfAxes = x + y;
+          console.log(x, y, sumOfAxes);
           rotateZ = sumOfAxes * compensationFactor * strength;
         }
 
