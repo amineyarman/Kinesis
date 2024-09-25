@@ -126,13 +126,17 @@ class KinesisTransformerElement {
       case "tilt": {
         const rotateYComponent = transformAxis.includes("X") ? y * strength : 0;
         const rotateXComponent = transformAxis.includes("Y") ? x * strength : 0;
-        transformValue = `rotateX(${rotateYComponent}deg) rotateY(${-rotateXComponent}deg) translate3d(0,0,${strength}px)`;
+        transformValue = `rotateX(${rotateYComponent}deg) rotateY(${-rotateXComponent}deg) translate3d(0,0,${
+          strength * 2
+        }px)`;
         break;
       }
       case "tilt_inv": {
         const rotateYComponent = transformAxis.includes("X") ? y * strength : 0;
         const rotateXComponent = transformAxis.includes("Y") ? x * strength : 0;
-        transformValue = `rotateX(${-rotateYComponent}deg) rotateY(${rotateXComponent}deg) translate3d(0,0,${strength}px)`;
+        transformValue = `rotateX(${-rotateYComponent}deg) rotateY(${rotateXComponent}deg) translate3d(0,0,${
+          strength * 2
+        }px)`;
         break;
       }
     }
