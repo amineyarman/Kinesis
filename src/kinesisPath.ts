@@ -55,13 +55,11 @@ class KinesisPath {
   }
 
   init() {
-    console.log("initPath Individual 2");
     const children = this.container.querySelectorAll(
       "[data-kinesispath-element]"
     ) as NodeListOf<HTMLElement>;
 
     children.forEach((child) => {
-      // Check if the child has its own data-ks-path attribute
       const elementPath = child.getAttribute("data-ks-path") || this.globalPath;
 
       if (!elementPath) {
@@ -99,12 +97,14 @@ class KinesisPath {
   }
 
   bindMoveEvents() {
-    this.container.addEventListener("mousemove", throttle(this.onMouseMove));
+    this.container.addEventListener(
+      "mousemove",
+      throttle(this.onMouseMove, this.throttleDuration)
+    );
     this.container.addEventListener("mouseleave", this.onMouseLeave);
   }
 
   onMouseMove = (event: MouseEvent) => {
-    console.log("move");
     const pos = getMousePosition(event, this.container);
     const progress = (pos.x + 1) / 2;
 
@@ -120,7 +120,10 @@ class KinesisPath {
   };
 
   bindScrollEvents() {
-    window.addEventListener("scroll", throttle(this.onScroll));
+    window.addEventListener(
+      "scroll",
+      throttle(this.onScroll, this.throttleDuration)
+    );
     this.onScroll();
   }
 

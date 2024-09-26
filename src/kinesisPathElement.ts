@@ -41,8 +41,6 @@ class KinesisPathElement {
   }
 
   resetPosition(throttleDuration: number) {
-    // const totalDelay = throttleDuration + this.transitionDuration;
-
     const totalDelay = throttleDuration;
     setTimeout(() => {
       this.element.style.offsetDistance = `${this.initialOffset}%`;
