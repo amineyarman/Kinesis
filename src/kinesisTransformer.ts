@@ -1,19 +1,19 @@
 import { KinesisTransformerOptions } from "./types";
 import KinesisTransformerElement from "./kinesisTransformerElement";
-import { getMousePosition, clamp, throttle } from "./utils";
+import { getMousePosition, clamp } from "./utils";
 
 class KinesisTransformer {
   container: HTMLElement;
   elements: KinesisTransformerElement[] = [];
   options: KinesisTransformerOptions;
-  isActive: boolean;
-  initialTransform: string;
-  interaction: "mouse" | "scroll";
+  isActive: boolean = true;
+  initialTransform: string = "";
+  interaction: "mouse" | "scroll" = "mouse";
   observer: IntersectionObserver | null = null;
-  perspective: string;
-  throttleDuration: number;
-  isMouseInside: boolean = false; // To track mouse inside state
-  preserve3d: boolean;
+  perspective: string = "1000px";
+  isMouseInside: boolean = false;
+  preserve3d: boolean = true;
+  mutationObserver: MutationObserver;
 
   constructor(container: HTMLElement, options: KinesisTransformerOptions = {}) {
     if (!container.hasAttribute("data-kinesistransformer")) {
@@ -23,38 +23,67 @@ class KinesisTransformer {
     }
 
     this.container = container;
+    this.options = options;
 
-    // Reading data-ks-perspective or defaulting to '1000px'
-    this.perspective =
-      container.getAttribute("data-ks-perspective") || "1000px";
-
-    // Reading throttle duration from data-ks-throttle or default to 100ms
-    this.throttleDuration = parseInt(
-      container.getAttribute("data-ks-throttle") || "100",
-      10
-    );
-
-    // Reading data-ks-preserve3d or defaulting to true
-    const preserve3dAttr = container.getAttribute("data-ks-preserve3d");
-    this.preserve3d = preserve3dAttr !== "false"; // Default to true
-
-    this.options = {
-      active: options.active !== undefined ? options.active : true,
-      duration: options.duration || 1000,
-      easing: options.easing || "cubic-bezier(0.23, 1, 0.32, 1)",
-      interaction: options.interaction || "mouse",
-    };
-    this.isActive = this.options.active!;
-    this.interaction = this.options.interaction as "mouse" | "scroll";
+    this.updatePropertiesFromAttributes();
 
     const computedStyle = window.getComputedStyle(this.container);
     this.initialTransform =
       computedStyle.transform === "none" ? "" : computedStyle.transform;
 
     this.init();
+
+    this.mutationObserver = new MutationObserver(
+      this.handleAttributeChange.bind(this)
+    );
+    this.mutationObserver.observe(this.container, {
+      attributes: true,
+      attributeFilter: [
+        "data-ks-active",
+        "data-ks-duration",
+        "data-ks-easing",
+        "data-ks-interaction",
+        "data-ks-perspective",
+        "data-ks-preserve3d",
+      ],
+    });
+  }
+
+  updatePropertiesFromAttributes() {
+    const activeAttr = this.container.getAttribute("data-ks-active");
+    this.isActive = activeAttr !== "false";
+
+    const interactionAttr = this.container.getAttribute("data-ks-interaction");
+    this.interaction = interactionAttr === "scroll" ? "scroll" : "mouse";
+
+    const perspectiveAttr = this.container.getAttribute("data-ks-perspective");
+    this.perspective = perspectiveAttr || "1000px";
+
+    const preserve3dAttr = this.container.getAttribute("data-ks-preserve3d");
+    this.preserve3d = preserve3dAttr !== "false";
+
+    // Update options
+    this.options.duration = parseInt(
+      this.container.getAttribute("data-ks-duration") || "1000",
+      10
+    );
+    this.options.easing =
+      this.container.getAttribute("data-ks-easing") ||
+      "cubic-bezier(0.23, 1, 0.32, 1)";
+  }
+
+  handleAttributeChange(mutationsList: MutationRecord[]) {
+    for (const mutation of mutationsList) {
+      if (mutation.type === "attributes") {
+        this.updatePropertiesFromAttributes();
+        this.init();
+      }
+    }
   }
 
   init() {
+    this.destroy();
+
     const children = this.container.querySelectorAll(
       "[data-kinesistransformer-element]"
     ) as NodeListOf<HTMLElement>;
@@ -69,7 +98,6 @@ class KinesisTransformer {
       el.transformAxis.includes("Z")
     );
 
-    // Set perspective if elements use Z axis or if the perspective is explicitly set
     if ((usesZAxis || this.perspective) && this.preserve3d) {
       this.container.style.perspective = this.perspective;
       this.container.style.transformStyle = "preserve-3d";
@@ -86,36 +114,44 @@ class KinesisTransformer {
 
   bindMoveEvents() {
     if (this.isActive) {
-      // Apply throttle to mousemove event
-      this.container.addEventListener("mousemove", throttle(this.onMouseMove));
-      this.container.addEventListener("mouseleave", this.onMouseLeave);
-      this.container.addEventListener("mouseenter", this.onMouseEnter);
+      this.container.addEventListener(
+        "mousemove",
+        this.onMouseMove.bind(this),
+        { passive: true }
+      );
+      this.container.addEventListener(
+        "mouseleave",
+        this.onMouseLeave.bind(this),
+        { passive: true }
+      );
+      this.container.addEventListener(
+        "mouseenter",
+        this.onMouseEnter.bind(this),
+        { passive: true }
+      );
     }
   }
 
-  onMouseEnter = () => {
-    this.isMouseInside = true; // Mark that the mouse is inside the container
-  };
+  onMouseEnter() {
+    this.isMouseInside = true;
+  }
 
-  onMouseMove = (event: MouseEvent) => {
-    if (!this.isMouseInside) return; // Skip if the mouse has already left
+  onMouseMove(event: MouseEvent) {
+    if (!this.isMouseInside) return;
 
     const pos = getMousePosition(event, this.container);
 
     this.elements.forEach((element) => {
       element.applyTransform(pos.x, pos.y);
     });
-  };
+  }
 
-  onMouseLeave = () => {
-    this.isMouseInside = false; // Mark that the mouse has left the container
+  onMouseLeave() {
+    this.isMouseInside = false;
     this.elements.forEach((element) => {
       element.resetTransform();
     });
-
-    // Remove any pending throttled events
-    this.container.removeEventListener("mousemove", this.onMouseMove);
-  };
+  }
 
   setupScrollInteraction() {
     if (!this.isActive) return;
@@ -139,19 +175,20 @@ class KinesisTransformer {
   }
 
   startScrollAnimation() {
-    // Apply throttle to scroll event
-    window.addEventListener("scroll", throttle(this.onScroll));
+    window.addEventListener("scroll", this.onScroll.bind(this), {
+      passive: true,
+    });
     this.onScroll();
   }
 
   resetScrollAnimation() {
-    window.removeEventListener("scroll", this.onScroll);
+    window.removeEventListener("scroll", this.onScroll.bind(this));
     this.elements.forEach((element) => {
       element.resetTransform();
     });
   }
 
-  onScroll = () => {
+  onScroll() {
     const rect = this.container.getBoundingClientRect();
     const windowHeight = window.innerHeight;
 
@@ -166,7 +203,31 @@ class KinesisTransformer {
       const y = scrollProgress;
       element.applyTransform(x, y);
     });
-  };
+  }
+
+  destroy() {
+    this.container.removeEventListener(
+      "mousemove",
+      this.onMouseMove.bind(this)
+    );
+    this.container.removeEventListener(
+      "mouseleave",
+      this.onMouseLeave.bind(this)
+    );
+    this.container.removeEventListener(
+      "mouseenter",
+      this.onMouseEnter.bind(this)
+    );
+    window.removeEventListener("scroll", this.onScroll.bind(this));
+
+    this.observer?.disconnect();
+    this.mutationObserver?.disconnect();
+
+    this.elements.forEach((element) => {
+      element.destroy();
+    });
+    this.elements = [];
+  }
 }
 
 export default KinesisTransformer;

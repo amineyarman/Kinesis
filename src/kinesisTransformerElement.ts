@@ -1,6 +1,5 @@
 import { TransformAxisType, TransformType, ConstraintAxisType } from "./types";
 import { parseTransformAxes } from "./utils";
-
 class KinesisTransformerElement {
   element: HTMLElement;
   strength!: number;
@@ -10,6 +9,7 @@ class KinesisTransformerElement {
   initialTransform!: string;
   transformOrigin!: string;
   mutationObserver!: MutationObserver;
+  rafId: number | null = null; 
 
   constructor(element: HTMLElement) {
     if (!element.hasAttribute("data-kinesistransformer-element")) {
@@ -19,7 +19,6 @@ class KinesisTransformerElement {
     }
 
     this.element = element;
-
     this.updatePropertiesFromAttributes();
 
     const computedStyle = window.getComputedStyle(this.element);
@@ -55,7 +54,6 @@ class KinesisTransformerElement {
       (this.type === "rotate" ? "Z" : "X, Y");
     this.transformAxis = parseTransformAxes(transformAxisAttribute);
 
-    // Update constraintAxis
     const constraintAxisAttribute = this.element.getAttribute(
       "data-ks-constraintAxis"
     );
@@ -63,7 +61,6 @@ class KinesisTransformerElement {
       ? (constraintAxisAttribute.trim().toUpperCase() as ConstraintAxisType)
       : null;
 
-    // Validate constraintAxis
     if (this.constraintAxis && !["X", "Y"].includes(this.constraintAxis)) {
       console.warn(
         "Invalid value for data-ks-constraintAxis. Acceptable values are 'X' or 'Y'."
@@ -76,6 +73,7 @@ class KinesisTransformerElement {
 
     this.element.style.transformOrigin = this.transformOrigin;
   }
+
   handleAttributeChange = (mutationsList: MutationRecord[]) => {
     for (const mutation of mutationsList) {
       if (mutation.type === "attributes") {
@@ -85,6 +83,15 @@ class KinesisTransformerElement {
   };
 
   applyTransform(x: number, y: number) {
+    if (this.rafId !== null) {
+      cancelAnimationFrame(this.rafId);
+    }
+    this.rafId = requestAnimationFrame(() => {
+      this.performTransform(x, y);
+    });
+  }
+
+  performTransform(x: number, y: number) {
     let transformValue = "";
 
     const { strength, type, transformAxis, constraintAxis } = this;
@@ -118,7 +125,6 @@ class KinesisTransformerElement {
           rotateZ = sumOfAxes * compensationFactor * strength;
         }
 
-        // Determine the axis components for rotate3d
         const axisXComponent = rotateX !== 0 ? 1 : 0;
         const axisYComponent = rotateY !== 0 ? 1 : 0;
         const axisZComponent = rotateZ !== 0 ? 1 : 0;
@@ -162,13 +168,19 @@ class KinesisTransformerElement {
 
     this.element.style.transform =
       `${this.initialTransform} ${transformValue}`.trim();
+
+    this.rafId = null;
   }
 
   resetTransform() {
+    if (this.rafId !== null) {
+      cancelAnimationFrame(this.rafId);
+      this.rafId = null;
+    }
     this.element.style.transform = this.initialTransform;
   }
 
-  disconnectObserver() {
+  destroy() {
     this.mutationObserver.disconnect();
   }
 }
