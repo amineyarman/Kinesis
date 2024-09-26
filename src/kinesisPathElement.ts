@@ -4,8 +4,9 @@ class KinesisPathElement {
   initialOffset: number;
   pathLength: number;
   transitionDuration: number;
+  pathData: string;
 
-  constructor(element: HTMLElement, pathLength: number) {
+  constructor(element: HTMLElement, pathData: string, pathLength: number) {
     if (!element.hasAttribute("data-kinesispath-element")) {
       throw new Error(
         "Element does not have the 'data-kinesispath-element' attribute."
@@ -17,20 +18,18 @@ class KinesisPathElement {
     this.initialOffset = parseFloat(
       element.getAttribute("data-ks-offset") || "0"
     );
+    this.pathData = pathData;
     this.pathLength = pathLength;
 
-    const parentElement = this.element.parentElement as HTMLElement;
-    const pathData = parentElement.getAttribute("data-ks-path") || "";
-
-    this.element.style.offsetPath = `path('${pathData}')`;
+    this.element.style.offsetPath = `path('${this.pathData}')`;
     this.element.style.offsetDistance = `${this.initialOffset}%`;
 
     this.transitionDuration = parseInt(
-      parentElement.getAttribute("data-ks-duration") || "1000",
+      element.getAttribute("data-ks-duration") || "1000",
       10
     );
     const easing =
-      parentElement.getAttribute("data-ks-easing") ||
+      element.getAttribute("data-ks-easing") ||
       "cubic-bezier(0.23, 1, 0.32, 1)";
     this.element.style.transition = `offset-distance ${this.transitionDuration}ms ${easing}`;
   }

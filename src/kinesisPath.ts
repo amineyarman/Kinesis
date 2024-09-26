@@ -8,8 +8,9 @@ class KinesisPath {
   options: Required<KinesisPathOptions>;
   isActive: boolean;
   interaction: "mouse" | "scroll";
-  pathLength: number;
   throttleDuration: number;
+  globalPath: string;
+  globalPathLength: number;
 
   constructor(container: HTMLElement, options: KinesisPathOptions = {}) {
     if (!container.hasAttribute("data-kinesispath")) {
@@ -23,7 +24,7 @@ class KinesisPath {
       active: options.active !== undefined ? options.active : true,
       duration:
         options.duration ||
-        parseInt(container.getAttribute("data-ks-duration") || "800"),
+        parseInt(container.getAttribute("data-ks-duration") || "800", 10),
       easing:
         options.easing ||
         container.getAttribute("data-ks-easing") ||
@@ -40,25 +41,42 @@ class KinesisPath {
       10
     );
 
-    this.isActive = this.options.active!;
+    this.isActive = this.options.active;
     this.interaction = this.options.interaction;
 
     if (!this.options.path) {
-      throw new Error("No path data provided for KinesisPath.");
+      throw new Error("No global path data provided for KinesisPath.");
     }
 
-    this.pathLength = this.calculatePathLength(this.options.path);
+    this.globalPath = this.options.path;
+    this.globalPathLength = this.calculatePathLength(this.globalPath);
 
     this.init();
   }
 
   init() {
+    console.log("initPath Individual 2");
     const children = this.container.querySelectorAll(
       "[data-kinesispath-element]"
     ) as NodeListOf<HTMLElement>;
 
     children.forEach((child) => {
-      const pathElement = new KinesisPathElement(child, this.pathLength);
+      // Check if the child has its own data-ks-path attribute
+      const elementPath = child.getAttribute("data-ks-path") || this.globalPath;
+
+      if (!elementPath) {
+        throw new Error(
+          "No path data provided for KinesisPathElement. Please provide a global path or a specific path for the element."
+        );
+      }
+
+      const elementPathLength = this.calculatePathLength(elementPath);
+
+      const pathElement = new KinesisPathElement(
+        child,
+        elementPath,
+        elementPathLength
+      );
       this.elements.push(pathElement);
     });
 
@@ -86,6 +104,7 @@ class KinesisPath {
   }
 
   onMouseMove = (event: MouseEvent) => {
+    console.log("move");
     const pos = getMousePosition(event, this.container);
     const progress = (pos.x + 1) / 2;
 
