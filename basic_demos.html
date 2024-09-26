@@ -213,6 +213,40 @@
         width: 200px;
         background-color: #3498db;
       }
+
+      /* Style for the SVG Grid Container */
+      #svg-grid-container {
+        width: 100%;
+        height: 100vh; /* Full viewport height */
+        display: flex;
+        justify-content: center;
+        align-items: center;
+        background-color: #f0f0f0; /* Light background for contrast */
+      }
+
+      /* Style for the SVG Element */
+      .distance-grid-svg {
+        border: 1px solid #ccc; /* Optional: Border around the SVG */
+        background-color: #fff; /* White background for the SVG */
+      }
+
+      /* Style for Nodes */
+      .distance-item {
+        fill: #3498db; /* Blue color for nodes */
+        cursor: pointer; /* Change cursor on hover */
+        transition: fill 0.3s ease;
+      }
+
+      .distance-item:hover {
+        fill: #2980b9; /* Darker blue on hover */
+      }
+
+      /* Style for Connecting Lines */
+      .distance-line {
+        stroke: #95a5a6; /* Grey color for lines */
+        stroke-width: 2;
+        pointer-events: none; /* Make lines non-interactive */
+      }
     </style>
   </head>
   <body>
@@ -533,6 +567,8 @@
       </div>
     </div>
 
+    <div id="svg-grid-container"></div>
+
     <script type="module" src="/src/main.ts"></script>
 
     <script>
@@ -550,6 +586,334 @@
         if (stopButton1 && kinesisAudio1) {
           stopButton1.addEventListener("click", () => kinesisAudio1.stop());
         }
+      });
+
+      /**
+       * Function to create an SVG grid with nodes and connecting lines.
+       * Each node will have Kinesis distance attributes for animations.
+       *
+       * @param {number} rows - Number of rows in the grid.
+       * @param {number} cols - Number of columns in the grid.
+       * @param {number} nodeRadius - Radius of each node.
+       * @param {number} horizontalSpacing - Horizontal spacing between nodes.
+       * @param {number} verticalSpacing - Vertical spacing between nodes.
+       * @param {string} transform - Transformation type ('translate', 'scale', etc.).
+       * @param {string} strength - Strength value for Kinesis animations.
+       * @param {string} distance - Starting distance value for Kinesis animations.
+       */
+      // function createDistanceSVGGrid(
+      //   rows,
+      //   cols,
+      //   nodeRadius,
+      //   horizontalSpacing,
+      //   verticalSpacing,
+      //   transform,
+      //   strength,
+      //   distance
+      // ) {
+      //   const svgNS = "http://www.w3.org/2000/svg";
+
+      //   // Create SVG Element
+      //   const svg = document.createElementNS(svgNS, "svg");
+      //   svg.setAttribute("class", "distance-grid-svg");
+      //   svg.setAttribute("width", cols * horizontalSpacing + 100); // Extra space for margins
+      //   svg.setAttribute("height", rows * verticalSpacing + 100); // Extra space for margins
+      //   svg.setAttribute(
+      //     "viewBox",
+      //     `0 0 ${cols * horizontalSpacing + 100} ${
+      //       rows * verticalSpacing + 100
+      //     }`
+      //   );
+
+      //   // Optional: Add a background rectangle
+      //   const bgRect = document.createElementNS(svgNS, "rect");
+      //   bgRect.setAttribute("width", "100%");
+      //   bgRect.setAttribute("height", "100%");
+      //   bgRect.setAttribute("fill", "#ffffff");
+      //   svg.appendChild(bgRect);
+
+      //   // Iterate through rows and columns to create nodes and lines
+      //   for (let row = 0; row < rows; row++) {
+      //     for (let col = 0; col < cols; col++) {
+      //       const x = 50 + col * horizontalSpacing; // Starting offset
+      //       const y = 50 + row * verticalSpacing; // Starting offset
+
+      //       // Create Node (Circle)
+      //       const node = document.createElementNS(svgNS, "circle");
+      //       node.setAttribute("class", "distance-item");
+      //       node.setAttribute("cx", x);
+      //       node.setAttribute("cy", y);
+      //       node.setAttribute("r", nodeRadius);
+      //       node.setAttribute("data-kinesisdistance-item", "");
+      //       node.setAttribute("data-ks-transform", transform);
+      //       node.setAttribute("data-ks-strength", strength);
+      //       node.setAttribute("data-ks-startdistance", distance);
+      //       node.setAttribute("data-ks-velocity", "acceleration"); // Optional: Based on your requirements
+      //       node.setAttribute("id", `node-${row}-${col}`); // Assign unique ID
+
+      //       svg.appendChild(node);
+
+      //       // Create Horizontal Line (to the next node in the row)
+      //       if (col < cols - 1) {
+      //         // Avoid drawing beyond the last column
+      //         const line = document.createElementNS(svgNS, "line");
+      //         line.setAttribute("class", "distance-line");
+      //         line.setAttribute("x1", x + nodeRadius);
+      //         line.setAttribute("y1", y);
+      //         line.setAttribute("x2", x + horizontalSpacing - nodeRadius);
+      //         line.setAttribute("y2", y);
+      //         // Assign data attributes to link to nodes
+      //         line.setAttribute("data-from", `node-${row}-${col}`);
+      //         line.setAttribute("data-to", `node-${row}-${col + 1}`);
+      //         svg.appendChild(line);
+      //       }
+
+      //       // Create Vertical Line (to the next node in the column)
+      //       if (row < rows - 1) {
+      //         // Avoid drawing beyond the last row
+      //         const line = document.createElementNS(svgNS, "line");
+      //         line.setAttribute("class", "distance-line");
+      //         line.setAttribute("x1", x);
+      //         line.setAttribute("y1", y + nodeRadius);
+      //         line.setAttribute("x2", x);
+      //         line.setAttribute("y2", y + verticalSpacing - nodeRadius);
+      //         // Assign data attributes to link to nodes
+      //         line.setAttribute("data-from", `node-${row}-${col}`);
+      //         line.setAttribute("data-to", `node-${row + 1}-${col}`);
+      //         svg.appendChild(line);
+      //       }
+      //     }
+      //   }
+
+      //   // Append SVG to the Container
+      //   const gridContainer = document.getElementById("svg-grid-container");
+      //   gridContainer.appendChild(svg);
+
+      //   // Anchor lines to nodes
+      //   anchorLinesToNodes(svg);
+      // }
+
+      // /**
+      //  * Function to anchor lines to their connected nodes.
+      //  * It updates the positions of lines based on the current positions of connected nodes.
+      //  * @param {SVGElement} svg - The SVG element containing the grid.
+      //  */
+      // function anchorLinesToNodes(svg) {
+      //   // Get all lines
+      //   const lines = svg.querySelectorAll(".distance-line");
+
+      //   // Get all nodes
+      //   const nodes = svg.querySelectorAll(".distance-item");
+
+      //   // Create a map of node IDs to node elements
+      //   const nodeMap = {};
+      //   nodes.forEach((node) => {
+      //     const id = node.getAttribute("id");
+      //     nodeMap[id] = node;
+      //   });
+
+      //   /**
+      //    * Function to get the transformed position of a node relative to the SVG's coordinate system.
+      //    * @param {SVGElement} element - The SVG node element.
+      //    * @param {SVGSVGElement} svg - The parent SVG element.
+      //    * @returns {Object} - An object with x and y coordinates.
+      //    */
+      //   function getSVGTransformedPosition(element, svg) {
+      //     // Get the bounding box relative to the viewport
+      //     const bbox = element.getBoundingClientRect();
+
+      //     // Get the SVG's bounding box relative to the viewport
+      //     const svgBBox = svg.getBoundingClientRect();
+
+      //     // Calculate the position relative to the SVG
+      //     const x = bbox.left + bbox.width / 2 - svgBBox.left;
+      //     const y = bbox.top + bbox.height / 2 - svgBBox.top;
+
+      //     return { x, y };
+      //   }
+
+      //   /**
+      //    * Function to update all lines based on the current positions of their connected nodes.
+      //    */
+      //   function updateLines() {
+      //     lines.forEach((line) => {
+      //       const fromId = line.getAttribute("data-from");
+      //       const toId = line.getAttribute("data-to");
+
+      //       const fromNode = nodeMap[fromId];
+      //       const toNode = nodeMap[toId];
+
+      //       if (fromNode && toNode) {
+      //         // Get transformed positions
+      //         const fromPos = getSVGTransformedPosition(fromNode, svg);
+      //         const toPos = getSVGTransformedPosition(toNode, svg);
+
+      //         // Update line attributes
+      //         line.setAttribute("x1", fromPos.x);
+      //         line.setAttribute("y1", fromPos.y);
+      //         line.setAttribute("x2", toPos.x);
+      //         line.setAttribute("y2", toPos.y);
+      //       }
+      //     });
+
+      //     // Continue the loop
+      //     requestAnimationFrame(updateLines);
+      //   }
+
+      //   // Start the update loop
+      //   requestAnimationFrame(updateLines);
+      // }
+
+      // // Wait for DOM to load before creating the grid and initializing Kinesis.js
+      // document.addEventListener("DOMContentLoaded", () => {
+      //   // Parameters for the grid
+      //   const rows = 10;
+      //   const cols = 10;
+      //   const nodeRadius = 5;
+      //   const horizontalSpacing = 100; // Adjust as needed
+      //   const verticalSpacing = 100; // Adjust as needed
+
+      //   // Create the SVG Grid with 'translate' transformation
+      //   createDistanceSVGGrid(
+      //     rows,
+      //     cols,
+      //     nodeRadius,
+      //     horizontalSpacing,
+      //     verticalSpacing,
+      //     "translate",
+      //     "-80",
+      //     "200"
+      //   );
+
+      //   // Initialize Kinesis after the grid has been added to the DOM
+      //   Kinesis.init();
+      //   console.log("Kinesis.js has been initialized");
+      // });
+
+      /**
+       * Creates an SVG grid with nodes and connecting lines.
+       * @param {number} rows - Number of rows.
+       * @param {number} cols - Number of columns.
+       * @param {number} radius - Radius of each node.
+       * @param {number} spacingX - Horizontal spacing.
+       * @param {number} spacingY - Vertical spacing.
+       * @param {string} transform - Transformation type for Kinesis.
+       * @param {string} strength - Strength value for Kinesis.
+       * @param {string} distance - Starting distance for Kinesis.
+       */
+      function createSVGGrid(
+        rows,
+        cols,
+        radius,
+        spacingX,
+        spacingY,
+        transform,
+        strength,
+        distance
+      ) {
+        const svgNS = "http://www.w3.org/2000/svg";
+        const svg = document.createElementNS(svgNS, "svg");
+        svg.classList.add("distance-grid-svg");
+        svg.setAttribute("width", cols * spacingX + 100);
+        svg.setAttribute("height", rows * spacingY + 100);
+        svg.setAttribute(
+          "viewBox",
+          `0 0 ${cols * spacingX + 100} ${rows * spacingY + 100}`
+        );
+
+        // Optional: Background Rectangle
+        const bg = document.createElementNS(svgNS, "rect");
+        bg.setAttribute("width", "100%");
+        bg.setAttribute("height", "100%");
+        bg.setAttribute("fill", "#ffffff");
+        svg.appendChild(bg);
+
+        // Store node references
+        const nodeMap = {};
+
+        // Create Nodes
+        for (let r = 0; r < rows; r++) {
+          for (let c = 0; c < cols; c++) {
+            const x = 50 + c * spacingX;
+            const y = 50 + r * spacingY;
+            const node = document.createElementNS(svgNS, "circle");
+            node.classList.add("distance-item");
+            node.setAttribute("cx", x);
+            node.setAttribute("cy", y);
+            node.setAttribute("r", radius);
+            node.setAttribute("id", `node-${r}-${c}`);
+            node.setAttribute("data-kinesisdistance-item", "");
+            node.setAttribute("data-ks-transform", transform);
+            node.setAttribute("data-ks-strength", strength);
+            node.setAttribute("data-ks-startdistance", distance);
+            node.setAttribute("data-ks-velocity", "acceleration");
+            svg.appendChild(node);
+            nodeMap[node.id] = node;
+
+            // Connect to the right neighbor
+            if (c < cols - 1) {
+              const line = document.createElementNS(svgNS, "line");
+              line.classList.add("distance-line");
+              line.setAttribute("data-from", node.id);
+              line.setAttribute("data-to", `node-${r}-${c + 1}`);
+              svg.appendChild(line);
+            }
+
+            // Connect to the bottom neighbor
+            if (r < rows - 1) {
+              const line = document.createElementNS(svgNS, "line");
+              line.classList.add("distance-line");
+              line.setAttribute("data-from", node.id);
+              line.setAttribute("data-to", `node-${r + 1}-${c}`);
+              svg.appendChild(line);
+            }
+          }
+        }
+
+        document.getElementById("svg-grid-container").appendChild(svg);
+        return { svg, nodeMap };
+      }
+
+      /**
+       * Updates line positions based on connected nodes.
+       * @param {SVGElement} svg - The SVG element containing the grid.
+       * @param {Object} nodeMap - Map of node IDs to node elements.
+       */
+      function anchorLines(svg, nodeMap) {
+        const lines = svg.querySelectorAll(".distance-line");
+
+        function update() {
+          lines.forEach((line) => {
+            const from = nodeMap[line.getAttribute("data-from")];
+            const to = nodeMap[line.getAttribute("data-to")];
+            if (from && to) {
+              line.setAttribute("x1", from.getAttribute("cx"));
+              line.setAttribute("y1", from.getAttribute("cy"));
+              line.setAttribute("x2", to.getAttribute("cx"));
+              line.setAttribute("y2", to.getAttribute("cy"));
+            }
+          });
+          requestAnimationFrame(update);
+        }
+
+        requestAnimationFrame(update);
+      }
+
+      // Initialize the Grid and Kinesis.js on DOM Content Loaded
+      document.addEventListener("DOMContentLoaded", () => {
+        const { svg, nodeMap } = createSVGGrid(
+          10,
+          10,
+          5,
+          100,
+          100,
+          "translate",
+          "-80",
+          "200"
+        );
+        anchorLines(svg, nodeMap);
+        Kinesis.init();
+        console.log("Kinesis.js has been initialized");
       });
     </script>
   </body>
