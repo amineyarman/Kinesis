@@ -1,11 +1,11 @@
-import { TransformAxisType, TransformType, ConstraintAxisType } from "./types";
+import { TransformAxisType, TransformType, InteractionAxisType } from "./types";
 import { parseTransformAxes } from "./utils";
 class KinesisTransformerElement {
   element: HTMLElement;
   strength!: number;
   type!: TransformType;
   transformAxis!: TransformAxisType[];
-  constraintAxis!: ConstraintAxisType | null;
+  interactionAxis!: InteractionAxisType | null;
   initialTransform!: string;
   transformOrigin!: string;
   mutationObserver!: MutationObserver;
@@ -34,7 +34,7 @@ class KinesisTransformerElement {
         "data-ks-strength",
         "data-ks-transform",
         "data-ks-transformAxis",
-        "data-ks-constraintAxis",
+        "data-ks-interactionAxis",
         "data-ks-transformOrigin",
       ],
     });
@@ -54,18 +54,18 @@ class KinesisTransformerElement {
       (this.type === "rotate" ? "Z" : "X, Y");
     this.transformAxis = parseTransformAxes(transformAxisAttribute);
 
-    const constraintAxisAttribute = this.element.getAttribute(
-      "data-ks-constraintAxis"
+    const interactionAxisAttribute = this.element.getAttribute(
+      "data-ks-interactionAxis"
     );
-    this.constraintAxis = constraintAxisAttribute
-      ? (constraintAxisAttribute.trim().toUpperCase() as ConstraintAxisType)
+    this.interactionAxis = interactionAxisAttribute
+      ? (interactionAxisAttribute.trim().toUpperCase() as InteractionAxisType)
       : null;
 
-    if (this.constraintAxis && !["X", "Y"].includes(this.constraintAxis)) {
+    if (this.interactionAxis && !["X", "Y"].includes(this.interactionAxis)) {
       console.warn(
-        "Invalid value for data-ks-constraintAxis. Acceptable values are 'X' or 'Y'."
+        "Invalid value for data-ks-interactionAxis. Acceptable values are 'X' or 'Y'."
       );
-      this.constraintAxis = null;
+      this.interactionAxis = null;
     }
 
     this.transformOrigin =
@@ -94,15 +94,15 @@ class KinesisTransformerElement {
   performTransform(x: number, y: number) {
     let transformValue = "";
 
-    const { strength, type, transformAxis, constraintAxis } = this;
+    const { strength, type, transformAxis, interactionAxis } = this;
 
-    if (constraintAxis === "X") {
+    if (interactionAxis === "X") {
       y = 0;
-    } else if (constraintAxis === "Y") {
+    } else if (interactionAxis === "Y") {
       x = 0;
     }
 
-    const compensationFactor = constraintAxis ? 2 : 1;
+    const compensationFactor = interactionAxis ? 2 : 1;
 
     switch (type) {
       case "translate": {

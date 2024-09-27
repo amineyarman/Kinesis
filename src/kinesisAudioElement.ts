@@ -1,5 +1,3 @@
-// kinesisAudioElement.ts
-
 import { TransformType, TransformAxisType } from "./types";
 import { parseTransformAxes } from "./utils";
 
@@ -8,11 +6,10 @@ class KinesisAudioElement {
   audioIndex: number;
   strength: number;
   type: TransformType;
-  axes: TransformAxisType[];
+  transformAxis: TransformAxisType[];
   transformOrigin: string;
   initialTransform: string;
 
-  // Track the previous value to determine if the frequency is increasing or decreasing
   private previousValue: number = 0;
 
   constructor(element: HTMLElement) {
@@ -34,17 +31,14 @@ class KinesisAudioElement {
     this.transformOrigin =
       element.getAttribute("data-ks-transformorigin") || "center";
 
-    // Parse data-ks-axis attribute
-    const axisAttr = element.getAttribute("data-ks-axis");
+    const axisAttr = element.getAttribute("data-ks-transformAxis");
     if (axisAttr) {
-      this.axes = parseTransformAxes(axisAttr);
-      if (this.axes.length === 0) {
-        // If parsing results in no valid axes, fallback to defaults
-        this.axes = this.getDefaultAxes();
+      this.transformAxis = parseTransformAxes(axisAttr);
+      if (this.transformAxis.length === 0) {
+        this.transformAxis = this.getDefaultAxes();
       }
     } else {
-      // Set default axes based on transform type
-      this.axes = this.getDefaultAxes();
+      this.transformAxis = this.getDefaultAxes();
     }
 
     const computedStyle = window.getComputedStyle(this.element);
@@ -54,17 +48,12 @@ class KinesisAudioElement {
     this.element.style.transformOrigin = this.transformOrigin;
     this.element.style.transform = this.initialTransform;
 
-    // Initialize CSS variables for dynamic transition durations
     this.element.style.setProperty("--transform-duration", "0.1s");
     this.element.style.transition = `transform var(--transform-duration) ease-out`;
 
-    // Improve performance by hinting the browser
     this.element.style.willChange = "transform";
   }
 
-  /**
-   * Returns default axes based on the TransformType
-   */
   private getDefaultAxes(): TransformAxisType[] {
     switch (this.type) {
       case "translate":
@@ -78,19 +67,22 @@ class KinesisAudioElement {
   }
 
   applyTransform(value: number) {
-    const { strength, type, axes } = this;
+    const { strength, type, transformAxis } = this;
 
     const transforms: string[] = [];
 
-    axes.forEach((axis) => {
+    transformAxis.forEach((transformAxis) => {
       switch (type) {
         case "translate": {
-          if (axis === "X" || axis === "Y" || axis === "Z") {
+          if (
+            transformAxis === "X" ||
+            transformAxis === "Y" ||
+            transformAxis === "Z"
+          ) {
             const translate = value * strength;
-            // For translate, set the axis being transformed and others to 0
-            const translateX = axis === "X" ? translate : 0;
-            const translateY = axis === "Y" ? translate : 0;
-            const translateZ = axis === "Z" ? translate : 0;
+            const translateX = transformAxis === "X" ? translate : 0;
+            const translateY = transformAxis === "Y" ? translate : 0;
+            const translateZ = transformAxis === "Z" ? translate : 0;
             transforms.push(
               `translate3d(${translateX}px, ${translateY}px, ${translateZ}px)`
             );
@@ -98,20 +90,26 @@ class KinesisAudioElement {
           break;
         }
         case "rotate": {
-          if (axis === "X" || axis === "Y" || axis === "Z") {
+          if (
+            transformAxis === "X" ||
+            transformAxis === "Y" ||
+            transformAxis === "Z"
+          ) {
             const rotate = value * strength;
-            // Rotate around the specified axis
-            transforms.push(`rotate${axis}(${rotate}deg)`);
+            transforms.push(`rotate${transformAxis}(${rotate}deg)`);
           }
           break;
         }
         case "scale": {
-          if (axis === "X" || axis === "Y" || axis === "Z") {
-            // Scaling factors for x, y, z
+          if (
+            transformAxis === "X" ||
+            transformAxis === "Y" ||
+            transformAxis === "Z"
+          ) {
             const scale = 1 + value * strength * 0.1;
-            const scaleX = axis === "X" ? scale : 1;
-            const scaleY = axis === "Y" ? scale : 1;
-            const scaleZ = axis === "Z" ? scale : 1;
+            const scaleX = transformAxis === "X" ? scale : 1;
+            const scaleY = transformAxis === "Y" ? scale : 1;
+            const scaleZ = transformAxis === "Z" ? scale : 1;
             transforms.push(`scale3d(${scaleX}, ${scaleY}, ${scaleZ})`);
           }
           break;
@@ -123,28 +121,22 @@ class KinesisAudioElement {
 
     const transformValue = transforms.join(" ");
 
-    // Determine if the frequency is increasing or decreasing
     const isRising = value > this.previousValue;
 
-    // Set transition duration based on the frequency change
     if (isRising) {
-      // Quick rise
       this.element.style.setProperty("--transform-duration", "0.05s");
     } else {
-      // Slow decay
       this.element.style.setProperty("--transform-duration", "0.3s");
     }
 
-    // Update the transform
     this.element.style.transform =
       `${this.initialTransform} ${transformValue}`.trim();
 
-    // Update the previous value
     this.previousValue = value;
   }
 
   resetTransform() {
-    this.element.style.setProperty("--transform-duration", "0.5s"); // Slow reset
+    this.element.style.setProperty("--transform-duration", "0.5s");
     this.element.style.transform = this.initialTransform;
     this.previousValue = 0;
   }

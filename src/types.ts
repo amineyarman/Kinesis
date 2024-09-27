@@ -1,6 +1,6 @@
 export type TransformAxisType = "X" | "Y" | "Z";
 
-export type ConstraintAxisType = "X" | "Y";
+export type InteractionAxisType = "X" | "Y";
 
 export type TransformType =
   | "translate"
@@ -35,7 +35,7 @@ export interface KinesisAudioOptions {
   perspective?: number;
   audio: string;
   playAudio?: boolean;
-  axis?: string;
+  transformAxis?: string;
 }
 
 export interface KinesisScrollItemOptions {
@@ -43,7 +43,7 @@ export interface KinesisScrollItemOptions {
   duration?: number;
   easing?: string;
   transformType?: TransformType;
-  axis?: string;
+  transformAxis?: string;
   strength?: number;
 }
 

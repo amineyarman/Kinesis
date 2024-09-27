@@ -11,7 +11,7 @@ class KinesisScrollItem {
   isActive: boolean;
   initialTransform: string;
   transformType: TransformType;
-  axis: TransformAxisType[];
+  transformAxis: TransformAxisType[];
   strength: number;
   observer: IntersectionObserver | null = null;
   throttleDuration: number;
@@ -37,24 +37,26 @@ class KinesisScrollItem {
         options.transformType ||
         (element.getAttribute("data-ks-transform") as TransformType) ||
         "translate",
-      axis: options.axis || element.getAttribute("data-ks-axis") || "Y",
+      transformAxis:
+        options.transformAxis ||
+        element.getAttribute("data-ks-transformAxis") ||
+        "Y",
       strength:
         options.strength !== undefined
           ? options.strength
           : parseFloat(element.getAttribute("data-ks-strength") || "10"),
     };
 
-    // Set throttle duration from data-ks-throttle or default to 100ms
     this.throttleDuration = parseInt(
       element.getAttribute("data-ks-throttle") || "100",
       10
     );
 
-    // Set transformType, axis, and strength
     this.isActive = this.options.active!;
     this.transformType = this.options.transformType!;
-    this.axis = parseTransformAxes(
-      this.options.axis! || (this.transformType === "rotate" ? "Z" : "X, Y")
+    this.transformAxis = parseTransformAxes(
+      this.options.transformAxis! ||
+        (this.transformType === "rotate" ? "Z" : "X, Y")
     );
     this.strength = this.options.strength!;
 
@@ -92,7 +94,6 @@ class KinesisScrollItem {
   }
 
   startScrollAnimation() {
-    // Apply throttle to scroll event
     window.addEventListener("scroll", throttle(this.onScroll));
     this.onScroll();
   }
@@ -113,21 +114,21 @@ class KinesisScrollItem {
   applyTransform(progress: number) {
     let transformValue = "";
 
-    const { strength, transformType, axis } = this;
+    const { strength, transformType, transformAxis } = this;
     const value = progress * strength;
 
     switch (transformType) {
       case "translate": {
-        const translateX = axis.includes("X") ? value : 0;
-        const translateY = axis.includes("Y") ? value : 0;
-        const translateZ = axis.includes("Z") ? value : 0;
+        const translateX = transformAxis.includes("X") ? value : 0;
+        const translateY = transformAxis.includes("Y") ? value : 0;
+        const translateZ = transformAxis.includes("Z") ? value : 0;
         transformValue = `translate3d(${translateX}px, ${translateY}px, ${translateZ}px)`;
         break;
       }
       case "rotate": {
-        const rotateX = axis.includes("X") ? value : 0;
-        const rotateY = axis.includes("Y") ? value : 0;
-        const rotateZ = axis.includes("Z") ? value : 0;
+        const rotateX = transformAxis.includes("X") ? value : 0;
+        const rotateY = transformAxis.includes("Y") ? value : 0;
+        const rotateZ = transformAxis.includes("Z") ? value : 0;
 
         transformValue = `rotate3d(${rotateX !== 0 ? 1 : 0}, ${
           rotateY !== 0 ? 1 : 0
@@ -135,9 +136,9 @@ class KinesisScrollItem {
         break;
       }
       case "scale": {
-        const scaleX = axis.includes("X") ? 1 + value * 0.01 : 1;
-        const scaleY = axis.includes("Y") ? 1 + value * 0.01 : 1;
-        const scaleZ = axis.includes("Z") ? 1 + value * 0.01 : 1;
+        const scaleX = transformAxis.includes("X") ? 1 + value * 0.01 : 1;
+        const scaleY = transformAxis.includes("Y") ? 1 + value * 0.01 : 1;
+        const scaleZ = transformAxis.includes("Z") ? 1 + value * 0.01 : 1;
         transformValue = `scale3d(${scaleX}, ${scaleY}, ${scaleZ})`;
         break;
       }

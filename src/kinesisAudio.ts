@@ -1,8 +1,6 @@
-// kinesisAudio.ts
-
 import { KinesisAudioOptions } from "./types";
 import KinesisAudioElement from "./kinesisAudioElement";
-import { throttle } from "./utils"; // Import the throttle function
+import { throttle } from "./utils";
 
 class KinesisAudio {
   container: HTMLElement;
@@ -19,14 +17,12 @@ class KinesisAudio {
   source: MediaElementAudioSourceNode | null = null;
   audioElement: HTMLAudioElement | null = null;
   animationId: number | null = null;
-  observer: IntersectionObserver | null = null; // Intersection Observer to observe visibility
-  isAnimating: boolean = false; // Track whether animation is active
+  observer: IntersectionObserver | null = null;
+  isAnimating: boolean = false;
 
-  // Smoothing parameters
-  private smoothingFactor: number = 0.8; // Adjust between 0 (no smoothing) and 1 (max smoothing)
+  private smoothingFactor: number = 0.8;
   private smoothedData: Uint8Array | null = null;
 
-  // Throttled animation step
   private throttledAnimate: () => void;
 
   constructor(container: HTMLElement, options: KinesisAudioOptions) {
@@ -57,7 +53,6 @@ class KinesisAudio {
     this.initialTransform =
       computedStyle.transform === "none" ? "" : computedStyle.transform;
 
-    // Initialize throttled animate function
     this.throttledAnimate = throttle(this.animate.bind(this));
 
     this.init();
@@ -87,7 +82,7 @@ class KinesisAudio {
       (window as any).webkitAudioContext)();
     this.analyser = this.audioContext.createAnalyser();
     this.analyser.fftSize = 256;
-    this.analyser.smoothingTimeConstant = this.smoothingFactor; // Apply smoothing
+    this.analyser.smoothingTimeConstant = this.smoothingFactor;
 
     const bufferLength = this.analyser.frequencyBinCount;
     this.dataArray = new Uint8Array(bufferLength);
@@ -101,32 +96,27 @@ class KinesisAudio {
       this.play();
     }
 
-    // Initialize the Intersection Observer
     this.initObserver();
 
     (this.container as any)._kinesisAudio = this;
   }
 
-  /**
-   * Initializes the Intersection Observer to monitor whether the container
-   * is within the viewport.
-   */
   initObserver() {
     this.observer = new IntersectionObserver(
       (entries) => {
         entries.forEach((entry) => {
           if (entry.isIntersecting) {
             console.log("in");
-            this.resume(); // Start or resume animation when visible
+            this.resume();
           } else {
             console.log("out");
-            this.pause(); // Stop animation when not visible
+            this.pause();
           }
         });
       },
       {
-        root: null, // Observe relative to the viewport
-        threshold: 0.1, // Trigger when at least 10% of the element is visible
+        root: null,
+        threshold: 0.1,
       }
     );
 
@@ -137,31 +127,25 @@ class KinesisAudio {
     if (this.audioElement) {
       this.audioElement.play();
       this.audioContext?.resume();
-      this.resume(); // Ensure animation resumes when play is called
+      this.resume();
     }
   }
 
-  /**
-   * Resumes the animation when the container becomes visible.
-   */
   resume() {
     if (!this.isAnimating) {
-      this.isAnimating = true; // Mark that animation is active
-      this.throttledAnimate(); // Start throttled animation
+      this.isAnimating = true;
+      this.throttledAnimate();
     }
   }
 
-  /**
-   * Pauses the animation and stops audio processing when the container is not visible.
-   */
   pause() {
     if (this.isAnimating) {
-      this.isAnimating = false; // Mark that animation is inactive
+      this.isAnimating = false;
       if (this.animationId) {
         cancelAnimationFrame(this.animationId);
-        this.animationId = null; // Stop the animation loop
+        this.animationId = null;
       }
-      this.resetTransforms(); // Optionally reset transforms when paused
+      this.resetTransforms();
     }
   }
 
@@ -169,36 +153,30 @@ class KinesisAudio {
     if (this.audioElement) {
       this.audioElement.pause();
       this.audioElement.currentTime = 0;
-      this.pause(); // Stop the animation and reset
+      this.pause();
     }
   }
 
   animate() {
-    // Ensure we only animate if we're supposed to (i.e., isAnimating is true)
     if (!this.isAnimating) return;
 
-    // Use non-null assertions
     this.analyser!.getByteFrequencyData(this.dataArray!);
 
-    // Apply smoothing manually
     for (let i = 0; i < this.dataArray!.length; i++) {
       this.smoothedData![i] =
         this.smoothedData![i] * this.smoothingFactor +
         this.dataArray![i] * (1 - this.smoothingFactor);
     }
 
-    // Normalize the smoothed data
     const normalizedData = Array.from(this.smoothedData!).map(
       (value) => value / 255
     );
 
-    // Apply transforms to elements
     this.elements.forEach((element) => {
       const frequencyValue = normalizedData[element.audioIndex];
       element.applyTransform(frequencyValue);
     });
 
-    // Throttle the next animation frame
     this.animationId = requestAnimationFrame(this.throttledAnimate);
   }
 
