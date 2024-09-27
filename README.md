@@ -43,11 +43,11 @@ The `KinesisTransformer` class applies transformations such as translations, rot
 #### Attributes
 
 | Attribute           | Default                        | Type    | Description                                 |
-| ------------------- | ------------------------------ | ------- | ------------------------------------------- | ---------------------------------- |
+| ------------------- | ------------------------------ | ------- | ------------------------------------------- |
 | data-ks-active      | true                           | boolean | Whether the component is active.            |
 | data-ks-duration    | 1000                           | number  | Duration of the transition in milliseconds. |
 | data-ks-easing      | cubic-bezier(0.23, 1, 0.32, 1) | string  | Easing function for the transition.         |
-| data-ks-interaction | "mouse"                        | "mouse" | "scroll"                                    | Interaction type: mouse or scroll. |
+| data-ks-interaction | "mouse"                        |         | Interaction type: mouse or scroll.          |
 | data-ks-perspective | 1000px                         | string  | Perspective for 3D transformations.         |
 | data-ks-preserve3d  | true                           | boolean | Whether to preserve the 3D transformations. |
 
@@ -171,13 +171,13 @@ Moves elements along an SVG path based on mouse movement or scroll events.
 
 #### Attributes
 
-| Attribute             | Default   | Type      | Description                                 |
-| ---------------- | ------- | ------ | ------------------------------------------------------ |
-| data-ks-active        | true      | boolean   | Whether the component is active.            |
-| `data-ks-duration`    | `800`     | `number`  | Duration of the transition in milliseconds. |
-| `data-ks-easing`      | `ease`    | `string`  | Easing function for the transition.         |
-| `data-ks-path`        | `""`      | `string`  | The SVG path that the element follows.      |
-| `data-ks-interaction` | `"mouse"` | `"mouse"` | `"scroll"`                                  | Interaction type: mouse or scroll. |
+| Attribute             | Default   | Type     | Description                                 |
+| --------------------- | --------- | -------- | ------------------------------------------- |
+| data-ks-active        | true      | boolean  | Whether the component is active.            |
+| `data-ks-duration`    | `800`     | `number` | Duration of the transition in milliseconds. |
+| `data-ks-easing`      | `ease`    | `string` | Easing function for the transition.         |
+| `data-ks-path`        | `""`      | `string` | The SVG path that the element follows.      |
+| `data-ks-interaction` | `"mouse"` |          | Interaction type: mouse or scroll.          |
 
 ### KinesisPathElement
 
@@ -206,13 +206,12 @@ Transforms elements based on the distance between the mouse pointer and the elem
 
 #### Attributes
 
-| Attribute               | Default  | Type     | Description                                        |
-| ---------------- | ------- | ------ | ------------------------------------------------------ |
-| data-ks-active          | true     | boolean  | Whether the component is active.                   |
-| data-ks-strength        | 20       | number   | Strength of the effect based on mouse distance.    |
-| data-ks-transformOrigin | "center" | string   | Origin of the transformation.                      |
-| data-ks-startdistance   | 100      | number   | The distance from which the transformation begins. |
-| data-ks-velocity        | "linear" | "linear" | "acceleration"                                     | "deceleration" | Speed profile for the transformation. |
+| Attribute               | Default  | Type    | Description                                        |
+| ----------------------- | -------- | ------- | -------------------------------------------------- |
+| data-ks-active          | true     | boolean | Whether the component is active.                   |
+| data-ks-strength        | 20       | number  | Strength of the effect based on mouse distance.    |
+| data-ks-transformOrigin | "center" | string  | Origin of the transformation.                      |
+| data-ks-startdistance   | 100      | number  | The distance from which the transformation begins. |
 
 ## License
 
