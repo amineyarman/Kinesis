@@ -106,10 +106,8 @@ class KinesisAudio {
       (entries) => {
         entries.forEach((entry) => {
           if (entry.isIntersecting) {
-            console.log("in");
             this.resume();
           } else {
-            console.log("out");
             this.pause();
           }
         });

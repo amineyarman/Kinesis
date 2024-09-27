@@ -42,14 +42,15 @@ The `KinesisTransformer` class applies transformations such as translations, rot
 
 #### Attributes
 
-| Attribute           | Default                        | Type    | Description                                 |
-| ------------------- | ------------------------------ | ------- | ------------------------------------------- |
-| data-ks-active      | true                           | boolean | Whether the component is active.            |
-| data-ks-duration    | 1000                           | number  | Duration of the transition in milliseconds. |
-| data-ks-easing      | cubic-bezier(0.23, 1, 0.32, 1) | string  | Easing function for the transition.         |
-| data-ks-interaction | "mouse"                        |         | Interaction type: mouse or scroll.          |
-| data-ks-perspective | 1000px                         | string  | Perspective for 3D transformations.         |
-| data-ks-preserve3d  | true                           | boolean | Whether to preserve the 3D transformations. |
+| Attribute              | Default                        | Type    | Description                                                                                         |
+| ---------------------- | ------------------------------ | ------- | --------------------------------------------------------------------------------------------------- |
+| data-ks-active         | true                           | boolean | Whether the component is active.                                                                    |
+| data-ks-duration       | 1000                           | number  | Duration of the transition in milliseconds.                                                         |
+| data-ks-easing         | cubic-bezier(0.23, 1, 0.32, 1) | string  | Easing function for the transition.                                                                 |
+| data-ks-interaction    | "mouse"                        |         | Interaction type: mouse or scroll.                                                                  |
+| data-ks-perspective    | 1000px                         | string  | Perspective for 3D transformations.                                                                 |
+| data-ks-preserve3d     | true                           | boolean | Whether to preserve the 3D transformations.                                                         |
+| data-ks-scroll-element | window                         | string  | Takes a selector in case the scroll event should be bound to a specific element other than `window` |
 
 ### KinesisTransformerElement
 

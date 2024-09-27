@@ -35,5 +35,4 @@ document.addEventListener("DOMContentLoaded", () => {
 
   // Initialize Kinesis after the grid has been added to the DOM
   initializeKinesis();
-  console.log("Kinesis.js has been initialized");
 });

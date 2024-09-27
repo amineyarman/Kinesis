@@ -62,7 +62,6 @@ function parseEnumAttribute<T>(
 }
 
 function initializeKinesis() {
-  console.log("1");
   const transformTypes: TransformType[] = [
     "translate",
     "rotate",

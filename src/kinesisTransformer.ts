@@ -14,6 +14,7 @@ class KinesisTransformer {
   isMouseInside: boolean = false;
   preserve3d: boolean = true;
   mutationObserver: MutationObserver;
+  scrollElement: HTMLElement | Window = window;
 
   constructor(container: HTMLElement, options: KinesisTransformerOptions = {}) {
     if (!container.hasAttribute("data-kinesistransformer")) {
@@ -45,6 +46,7 @@ class KinesisTransformer {
         "data-ks-interaction",
         "data-ks-perspective",
         "data-ks-preserve3d",
+        "data-ks-scroll-element",
       ],
     });
   }
@@ -62,7 +64,23 @@ class KinesisTransformer {
     const preserve3dAttr = this.container.getAttribute("data-ks-preserve3d");
     this.preserve3d = preserve3dAttr !== "false";
 
-    // Update options
+    const scrollElementAttr = this.container.getAttribute(
+      "data-ks-scroll-element"
+    );
+    if (this.interaction === "scroll" && scrollElementAttr) {
+      const element = document.querySelector<HTMLElement>(scrollElementAttr);
+      if (element) {
+        this.scrollElement = element;
+      } else {
+        console.warn(
+          `Scroll element '${scrollElementAttr}' not found. Falling back to window.`
+        );
+        this.scrollElement = window;
+      }
+    } else {
+      this.scrollElement = window;
+    }
+
     this.options.duration = parseInt(
       this.container.getAttribute("data-ks-duration") || "1000",
       10
@@ -175,22 +193,36 @@ class KinesisTransformer {
   }
 
   startScrollAnimation() {
-    window.addEventListener("scroll", this.onScroll.bind(this), {
+    this.scrollElement.addEventListener("scroll", this.onScrollBound, {
       passive: true,
     });
     this.onScroll();
   }
 
   resetScrollAnimation() {
-    window.removeEventListener("scroll", this.onScroll.bind(this));
+    this.scrollElement.removeEventListener("scroll", this.onScrollBound);
     this.elements.forEach((element) => {
       element.resetTransform();
     });
   }
 
+  onScrollBound = this.onScroll.bind(this);
+
   onScroll() {
-    const rect = this.container.getBoundingClientRect();
-    const windowHeight = window.innerHeight;
+    let rect: DOMRect;
+    let scrollTop: number;
+    let windowHeight: number;
+
+    if (this.scrollElement instanceof Window) {
+      rect = this.container.getBoundingClientRect();
+      windowHeight = window.innerHeight;
+      scrollTop = window.pageYOffset || document.documentElement.scrollTop;
+    } else {
+      rect = this.container.getBoundingClientRect();
+      const scrollContainerRect = this.scrollElement.getBoundingClientRect();
+      windowHeight = this.scrollElement.clientHeight;
+      scrollTop = this.scrollElement.scrollTop;
+    }
 
     const scrollProgress = clamp(
       (windowHeight - rect.top) / (windowHeight + rect.height),
@@ -218,7 +250,7 @@ class KinesisTransformer {
       "mouseenter",
       this.onMouseEnter.bind(this)
     );
-    window.removeEventListener("scroll", this.onScroll.bind(this));
+    this.scrollElement.removeEventListener("scroll", this.onScrollBound);
 
     this.observer?.disconnect();
     this.mutationObserver?.disconnect();

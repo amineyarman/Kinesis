@@ -1,5 +1,6 @@
 import { TransformAxisType, TransformType, InteractionAxisType } from "./types";
 import { parseTransformAxes } from "./utils";
+
 class KinesisTransformerElement {
   element: HTMLElement;
   strength!: number;
@@ -9,7 +10,7 @@ class KinesisTransformerElement {
   initialTransform!: string;
   transformOrigin!: string;
   mutationObserver!: MutationObserver;
-  rafId: number | null = null; 
+  rafId: number | null = null;
 
   constructor(element: HTMLElement) {
     if (!element.hasAttribute("data-kinesistransformer-element")) {
@@ -104,22 +105,46 @@ class KinesisTransformerElement {
 
     const compensationFactor = interactionAxis ? 2 : 1;
 
+    const singleAxis = transformAxis.length === 1;
+    let combinedValue = 0;
+
+    if (singleAxis) {
+      const weightX = 1;
+      const weightY = 1;
+      combinedValue = x * weightX + y * weightY;
+    }
+
     switch (type) {
       case "translate": {
-        const translateX = transformAxis.includes("X") ? x * strength : 0;
-        const translateY = transformAxis.includes("Y") ? y * strength : 0;
+        let translateX = 0;
+        let translateY = 0;
         let translateZ = 0;
+
+        if (transformAxis.includes("X")) {
+          translateX = singleAxis ? combinedValue * strength : x * strength;
+        }
+        if (transformAxis.includes("Y")) {
+          translateY = singleAxis ? combinedValue * strength : y * strength;
+        }
         if (transformAxis.includes("Z")) {
           const sumOfAxes = x + y;
           translateZ = sumOfAxes * compensationFactor * strength;
         }
+
         transformValue = `translate3d(${translateX}px, ${translateY}px, ${translateZ}px)`;
         break;
       }
       case "rotate": {
-        const rotateX = transformAxis.includes("X") ? y * strength : 0;
-        const rotateY = transformAxis.includes("Y") ? x * strength : 0;
+        let rotateX = 0;
+        let rotateY = 0;
         let rotateZ = 0;
+
+        if (transformAxis.includes("X")) {
+          rotateX = singleAxis ? combinedValue * strength : y * strength;
+        }
+        if (transformAxis.includes("Y")) {
+          rotateY = singleAxis ? combinedValue * strength : x * strength;
+        }
         if (transformAxis.includes("Z")) {
           const sumOfAxes = x + y;
           rotateZ = sumOfAxes * compensationFactor * strength;
@@ -134,31 +159,63 @@ class KinesisTransformerElement {
         break;
       }
       case "scale": {
-        const scaleX = transformAxis.includes("X")
-          ? 1 + x * strength * 0.01
-          : 1;
-        const scaleY = transformAxis.includes("Y")
-          ? 1 + y * strength * 0.01
-          : 1;
+        let scaleX = 1;
+        let scaleY = 1;
         let scaleZ = 1;
+
+        if (transformAxis.includes("X")) {
+          scaleX = singleAxis
+            ? 1 + combinedValue * strength * 0.01
+            : 1 + x * strength * 0.01;
+        }
+        if (transformAxis.includes("Y")) {
+          scaleY = singleAxis
+            ? 1 + combinedValue * strength * 0.01
+            : 1 + y * strength * 0.01;
+        }
         if (transformAxis.includes("Z")) {
           const sumOfAxes = x + y;
           scaleZ = 1 + sumOfAxes * compensationFactor * strength * 0.01;
         }
+
         transformValue = `scale3d(${scaleX}, ${scaleY}, ${scaleZ})`;
         break;
       }
       case "tilt": {
-        const rotateYComponent = transformAxis.includes("X") ? y * strength : 0;
-        const rotateXComponent = transformAxis.includes("Y") ? x * strength : 0;
+        let rotateYComponent = 0;
+        let rotateXComponent = 0;
+
+        if (transformAxis.includes("X")) {
+          rotateYComponent = singleAxis
+            ? combinedValue * strength
+            : y * strength;
+        }
+        if (transformAxis.includes("Y")) {
+          rotateXComponent = singleAxis
+            ? combinedValue * strength
+            : x * strength;
+        }
+
         transformValue = `rotateX(${rotateYComponent}deg) rotateY(${-rotateXComponent}deg) translate3d(0,0,${
           strength * 2
         }px)`;
         break;
       }
       case "tilt_inv": {
-        const rotateYComponent = transformAxis.includes("X") ? y * strength : 0;
-        const rotateXComponent = transformAxis.includes("Y") ? x * strength : 0;
+        let rotateYComponent = 0;
+        let rotateXComponent = 0;
+
+        if (transformAxis.includes("X")) {
+          rotateYComponent = singleAxis
+            ? combinedValue * strength
+            : y * strength;
+        }
+        if (transformAxis.includes("Y")) {
+          rotateXComponent = singleAxis
+            ? combinedValue * strength
+            : x * strength;
+        }
+
         transformValue = `rotateX(${-rotateYComponent}deg) rotateY(${rotateXComponent}deg) translate3d(0,0,${
           strength * 2
         }px)`;
