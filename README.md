@@ -1,13 +1,13 @@
 # Kinesis
 
-`@amineyrman/kinesis` is a versatile library for adding dynamic, interactive, and physics-based animations to your web components. It includes features like transforming elements based on mouse movement, scroll events, and even audio frequency data.
+`@amineyarman/kinesis` is a versatile library for adding dynamic, interactive, and physics-based animations to your web components. It includes features like transforming elements based on mouse movement, scroll events, and even audio frequency data.
 
 ## Installation
 
 You can install `kinesis` via npm:
 
 ```bash
-npm install @amineyrman/kinesis
+npm install @amineyarman/kinesis
 ```
 
 ## Usage
@@ -17,7 +17,7 @@ npm install @amineyrman/kinesis
 To initialize the library, import the `initializeKinesis` function and call it after your DOM elements are loaded:
 
 ```javascript
-import { initializeKinesis } from "@amineyrman/kinesis";
+import { initializeKinesis } from "@amineyarman/kinesis";
 
 document.addEventListener("DOMContentLoaded", () => {
   initializeKinesis();

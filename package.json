@@ -1,6 +1,6 @@
 {
-  "name": "@amineyrman/kinesis",
-  "version": "1.0.3",
+  "name": "@amineyarman/kinesis",
+  "version": "1.0.0",
   "description": "Easily create complex interactive animations.",
   "main": "dist/kinesis.umd.js",
   "module": "dist/kinesis.es.js",
@@ -18,7 +18,7 @@
   "license": "MIT",
   "repository": {
     "type": "git",
-    "url": "https://github.com/amineyrvys/kinesis.js"
+    "url": "https://github.com/amineyarman/kinesis"
   },
   "scripts": {
     "dev": "vite",
