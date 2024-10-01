@@ -5,7 +5,7 @@ class KinesisAudioElement {
   element: HTMLElement;
   audioIndex: number;
   strength: number;
-  type: TransformType;
+  transform: TransformType;
   transformAxis: TransformAxisType[];
   transformOrigin: string;
   initialTransform: string;
@@ -26,8 +26,9 @@ class KinesisAudioElement {
     this.strength = parseFloat(
       element.getAttribute("data-ks-strength") || "10"
     );
-    this.type =
-      (element.getAttribute("data-ks-type") as TransformType) || "translate";
+    this.transform =
+      (element.getAttribute("data-ks-transform") as TransformType) ||
+      "translate";
     this.transformOrigin =
       element.getAttribute("data-ks-transformorigin") || "center";
 
@@ -55,7 +56,7 @@ class KinesisAudioElement {
   }
 
   private getDefaultAxes(): TransformAxisType[] {
-    switch (this.type) {
+    switch (this.transform) {
       case "translate":
         return ["Y"];
       case "rotate":
@@ -67,12 +68,12 @@ class KinesisAudioElement {
   }
 
   applyTransform(value: number) {
-    const { strength, type, transformAxis } = this;
+    const { strength, transform, transformAxis } = this;
 
     const transforms: string[] = [];
 
     transformAxis.forEach((transformAxis) => {
-      switch (type) {
+      switch (transform) {
         case "translate": {
           if (
             transformAxis === "X" ||

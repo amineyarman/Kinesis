@@ -1,3 +1,5 @@
+// kinesisAudio.ts
+
 import { KinesisAudioOptions } from "./types";
 import KinesisAudioElement from "./kinesisAudioElement";
 import { throttle } from "./utils";
@@ -18,6 +20,7 @@ class KinesisAudio {
   audioElement: HTMLAudioElement | null = null;
   animationId: number | null = null;
   observer: IntersectionObserver | null = null;
+  mutationObserver: MutationObserver | null = null;
   isAnimating: boolean = false;
 
   private smoothingFactor: number = 0.8;
@@ -87,6 +90,7 @@ class KinesisAudio {
     const bufferLength = this.analyser.frequencyBinCount;
     this.dataArray = new Uint8Array(bufferLength);
     this.smoothedData = new Uint8Array(bufferLength);
+    this.smoothedData.fill(0);
 
     this.source = this.audioContext.createMediaElementSource(this.audioElement);
     this.source.connect(this.analyser);
@@ -96,12 +100,13 @@ class KinesisAudio {
       this.play();
     }
 
-    this.initObserver();
+    this.initIntersectionObserver();
+    this.initMutationObserver();
 
     (this.container as any)._kinesisAudio = this;
   }
 
-  initObserver() {
+  initIntersectionObserver() {
     this.observer = new IntersectionObserver(
       (entries) => {
         entries.forEach((entry) => {
@@ -121,11 +126,38 @@ class KinesisAudio {
     this.observer.observe(this.container);
   }
 
+  initMutationObserver() {
+    this.mutationObserver = new MutationObserver((mutations) => {
+      mutations.forEach((mutation) => {
+        if (
+          mutation.type === "attributes" &&
+          mutation.attributeName === "data-ks-playaudio"
+        ) {
+          const playAudio =
+            this.container.getAttribute("data-ks-playaudio") === "true";
+          if (playAudio) {
+            this.play();
+          } else {
+            this.stop();
+          }
+        }
+      });
+    });
+
+    this.mutationObserver.observe(this.container, {
+      attributes: true,
+      attributeFilter: ["data-ks-playaudio"],
+    });
+  }
+
   play() {
     if (this.audioElement) {
       this.audioElement.play();
       this.audioContext?.resume();
       this.resume();
+      if (this.smoothedData) {
+        this.smoothedData.fill(0);
+      }
     }
   }
 
@@ -152,6 +184,9 @@ class KinesisAudio {
       this.audioElement.pause();
       this.audioElement.currentTime = 0;
       this.pause();
+      if (this.smoothedData) {
+        this.smoothedData.fill(0);
+      }
     }
   }
 
@@ -182,6 +217,15 @@ class KinesisAudio {
     this.elements.forEach((element) => {
       element.resetTransform();
     });
+  }
+
+  destroy() {
+    this.observer?.disconnect();
+    this.mutationObserver?.disconnect();
+    this.audioElement?.remove();
+    this.source?.disconnect();
+    this.analyser?.disconnect();
+    this.audioContext?.close();
   }
 }
 
