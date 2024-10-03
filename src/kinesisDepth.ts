@@ -33,7 +33,7 @@ class KinesisDepth {
           : "cubic-bezier(0.23, 1, 0.32, 1)",
       perspective:
         options.perspective !== undefined ? options.perspective : 1000,
-      sensitivity: options.sensitivity !== undefined ? options.sensitivity : 10,
+      sensitivity: options.sensitivity !== undefined ? options.sensitivity : 40,
       inverted: options.inverted !== undefined ? options.inverted : false,
     } as Required<KinesisDepthOptions>;
 

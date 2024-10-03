@@ -75,11 +75,39 @@ class KinesisAudio {
     this.container.style.transformStyle = "preserve-3d";
     this.container.style.position = "relative";
 
+    this.setupAudioElement(this.audioSrc);
+
+    this.initIntersectionObserver();
+    this.initMutationObserver();
+
+    (this.container as any)._kinesisAudio = this;
+  }
+
+  setupAudioElement(src: string) {
+    if (this.audioElement) {
+      this.audioElement.pause();
+      this.audioElement.remove();
+      this.audioElement = null;
+    }
+
     this.audioElement = document.createElement("audio");
-    this.audioElement.src = this.audioSrc;
+    this.audioElement.src = src;
     this.audioElement.crossOrigin = "anonymous";
     this.audioElement.style.display = "none";
     this.container.appendChild(this.audioElement);
+
+    this.initializeAudioContext();
+
+    if (this.playAudio) {
+      this.play();
+    }
+  }
+
+  initializeAudioContext() {
+    if (this.audioContext) {
+      this.audioContext.close();
+      this.audioContext = null;
+    }
 
     this.audioContext = new (window.AudioContext ||
       (window as any).webkitAudioContext)();
@@ -92,18 +120,13 @@ class KinesisAudio {
     this.smoothedData = new Uint8Array(bufferLength);
     this.smoothedData.fill(0);
 
-    this.source = this.audioContext.createMediaElementSource(this.audioElement);
-    this.source.connect(this.analyser);
-    this.analyser.connect(this.audioContext.destination);
-
-    if (this.playAudio) {
-      this.play();
+    if (this.audioElement) {
+      this.source = this.audioContext.createMediaElementSource(
+        this.audioElement
+      );
+      this.source.connect(this.analyser);
+      this.analyser.connect(this.audioContext.destination);
     }
-
-    this.initIntersectionObserver();
-    this.initMutationObserver();
-
-    (this.container as any)._kinesisAudio = this;
   }
 
   initIntersectionObserver() {
@@ -131,14 +154,24 @@ class KinesisAudio {
       mutations.forEach((mutation) => {
         if (
           mutation.type === "attributes" &&
-          mutation.attributeName === "data-ks-playaudio"
+          (mutation.attributeName === "data-ks-playaudio" ||
+            mutation.attributeName === "data-ks-audio")
         ) {
           const playAudio =
             this.container.getAttribute("data-ks-playaudio") === "true";
-          if (playAudio) {
-            this.play();
-          } else {
-            this.stop();
+          const newAudioSrc = this.container.getAttribute("data-ks-audio");
+
+          if (mutation.attributeName === "data-ks-playaudio") {
+            if (playAudio) {
+              this.play();
+            } else {
+              this.stop();
+            }
+          }
+
+          if (mutation.attributeName === "data-ks-audio" && newAudioSrc) {
+            this.audioSrc = newAudioSrc;
+            this.setupAudioElement(this.audioSrc);
           }
         }
       });
@@ -146,7 +179,7 @@ class KinesisAudio {
 
     this.mutationObserver.observe(this.container, {
       attributes: true,
-      attributeFilter: ["data-ks-playaudio"],
+      attributeFilter: ["data-ks-playaudio", "data-ks-audio"],
     });
   }
 
@@ -191,11 +224,11 @@ class KinesisAudio {
   }
 
   animate() {
-    if (!this.isAnimating) return;
+    if (!this.isAnimating || !this.analyser || !this.dataArray) return;
 
-    this.analyser!.getByteFrequencyData(this.dataArray!);
+    this.analyser.getByteFrequencyData(this.dataArray);
 
-    for (let i = 0; i < this.dataArray!.length; i++) {
+    for (let i = 0; i < this.dataArray.length; i++) {
       this.smoothedData![i] =
         this.smoothedData![i] * this.smoothingFactor +
         this.dataArray![i] * (1 - this.smoothingFactor);
@@ -222,6 +255,7 @@ class KinesisAudio {
   destroy() {
     this.observer?.disconnect();
     this.mutationObserver?.disconnect();
+    this.audioElement?.pause();
     this.audioElement?.remove();
     this.source?.disconnect();
     this.analyser?.disconnect();

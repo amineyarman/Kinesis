@@ -149,14 +149,14 @@ Transforms elements based on scroll position. Ideal for parallax effects. This i
 
 #### Attributes
 
-| Attribute         | Default                        | Type          | Description                                               |
-| ----------------- | ------------------------------ | ------------- | --------------------------------------------------------- |
-| data-ks-active    | true                           | boolean       | Whether the component is active.                          |
-| data-ks-duration  | 1000                           | number        | Duration of the transition in milliseconds.               |
-| data-ks-easing    | cubic-bezier(0.23, 1, 0.32, 1) | string        | Easing function for the transition.                       |
-| data-ks-transform | "translate"                    | TransformType | Type of transformation: translate, rotate, or scale.      |
-| data-ks-axis      | "Y"                            | string        | The axis on which the element transforms (X, Y, or both). |
-| data-ks-strength  | 10                             | number        | Strength of the effect relative to scroll position.       |
+| Attribute             | Default                        | Type          | Description                                               |
+| --------------------- | ------------------------------ | ------------- | --------------------------------------------------------- |
+| data-ks-active        | true                           | boolean       | Whether the component is active.                          |
+| data-ks-duration      | 1000                           | number        | Duration of the transition in milliseconds.               |
+| data-ks-easing        | cubic-bezier(0.23, 1, 0.32, 1) | string        | Easing function for the transition.                       |
+| data-ks-transform     | "translate"                    | TransformType | Type of transformation: translate, rotate, or scale.      |
+| data-ks-transformAxis | "Y"                            | string        | The axis on which the element transforms (X, Y, or both). |
+| data-ks-strength      | 10                             | number        | Strength of the effect relative to scroll position.       |
 
 ### KinesisPath
 
@@ -207,12 +207,14 @@ Transforms elements based on the distance between the mouse pointer and the elem
 
 #### Attributes
 
-| Attribute               | Default  | Type    | Description                                        |
-| ----------------------- | -------- | ------- | -------------------------------------------------- |
-| data-ks-active          | true     | boolean | Whether the component is active.                   |
-| data-ks-strength        | 20       | number  | Strength of the effect based on mouse distance.    |
-| data-ks-transformOrigin | "center" | string  | Origin of the transformation.                      |
-| data-ks-startdistance   | 100      | number  | The distance from which the transformation begins. |
+| Attribute               | Default      | Type            | Description                                          |
+| ----------------------- | ------------ | --------------- | ---------------------------------------------------- |
+| data-ks-active          | true         | boolean         | Whether the component is active.                     |
+| data-ks-strength        | 20           | number          | Strength of the effect based on mouse distance.      |
+| data-ks-transformOrigin | "center"     | string          | Origin of the transformation.                        |
+| data-ks-startdistance   | 100          | number          | The distance from which the transformation begins.   |
+| data-ks-transform       | 'translate'  | TransformType   | Type of transformation: translate, rotate, or scale. |
+| data-ks-interaction     | 'attraction' | InteractionType | Type of interaction relative to mouse distance       |
 
 ## License
 

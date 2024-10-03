@@ -9,7 +9,7 @@ export type TransformType =
   | "tilt"
   | "tilt_inv";
 
-export type VelocityType = "linear" | "acceleration" | "deceleration";
+export type InteractionType = "attraction" | "repulsion" | "linear";
 
 export interface KinesisTransformerOptions {
   active?: boolean;
@@ -35,7 +35,6 @@ export interface KinesisAudioOptions {
   perspective?: number;
   audio: string;
   playAudio?: boolean;
-  transformAxis?: string;
 }
 
 export interface KinesisScrollItemOptions {
@@ -43,7 +42,7 @@ export interface KinesisScrollItemOptions {
   duration?: number;
   easing?: string;
   transformType?: TransformType;
-  transformAxis?: string;
+  transformAxis?: string | null;
   strength?: number;
 }
 
@@ -55,13 +54,13 @@ export interface KinesisPathOptions {
   interaction?: "mouse" | "scroll";
 }
 
+export type InteractionModeType = "attraction" | "repulsion" | "neutral";
+
 export interface KinesisDistanceItemOptions {
   active?: boolean;
   strength?: number;
   transformOrigin?: string;
   startDistance?: number;
-  velocity?: VelocityType;
+  interactionType?: InteractionType; // New attribute
   transformType?: TransformType;
-  duration?: number;
-  easing?: string;
 }

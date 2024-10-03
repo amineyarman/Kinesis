@@ -11,7 +11,6 @@ import {
   KinesisScrollItemOptions,
   KinesisPathOptions,
   KinesisDistanceItemOptions,
-  VelocityType,
   TransformType,
 } from "./types";
 
@@ -69,11 +68,6 @@ function initializeKinesis() {
     "tilt",
     "tilt_inv",
   ];
-  const velocityTypes: VelocityType[] = [
-    "linear",
-    "acceleration",
-    "deceleration",
-  ];
 
   function initializeComponent<TOptions>(
     selector: string,
@@ -130,7 +124,7 @@ function initializeKinesis() {
           "cubic-bezier(0.23, 1, 0.32, 1)"
         ),
         perspective: parseIntAttribute(element, "data-ks-perspective", 1000),
-        sensitivity: parseFloatAttribute(element, "data-ks-sensitivity", 100),
+        sensitivity: parseFloatAttribute(element, "data-ks-sensitivity", 40),
         inverted: parseBooleanAttribute(element, "data-ks-invert", false),
       }),
       KinesisDepth
@@ -171,7 +165,6 @@ function initializeKinesis() {
           transformTypes,
           "translate"
         ),
-        axis: parseStringAttribute(element, "data-ks-axis", "Y"),
         strength: parseFloatAttribute(element, "data-ks-strength", 10),
       }),
       KinesisScrollItem
@@ -205,12 +198,6 @@ function initializeKinesis() {
           "center"
         ),
         startDistance: parseIntAttribute(element, "data-ks-startdistance", 100),
-        velocity: parseEnumAttribute(
-          element,
-          "data-ks-velocity",
-          velocityTypes,
-          "linear"
-        ),
         transformType: parseEnumAttribute(
           element,
           "data-ks-transform",

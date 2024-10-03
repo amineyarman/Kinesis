@@ -1,6 +1,8 @@
+// kinesisDistanceItem.ts
+
 import {
   KinesisDistanceItemOptions,
-  VelocityType,
+  InteractionType,
   TransformType,
 } from "./types";
 import { getMousePositionDistance, clamp } from "./utils";
@@ -15,6 +17,9 @@ class KinesisDistanceItem {
   private animationId: number | null = null;
   private duration: number;
   private easing: string;
+  private readonly MIN_DISTANCE: number = 0;
+  private readonly TRANSFORM_THRESHOLD: number = 10;
+  private readonly STICKING_THRESHOLD: number = 5;
 
   constructor(element: HTMLElement, options: KinesisDistanceItemOptions = {}) {
     if (!element.hasAttribute("data-kinesisdistance-item")) {
@@ -25,6 +30,7 @@ class KinesisDistanceItem {
 
     this.element = element;
 
+    // Updated options to include interactionType instead of velocity
     this.options = {
       active: options.active !== undefined ? options.active : true,
       strength: options.strength !== undefined ? options.strength : 20,
@@ -36,9 +42,9 @@ class KinesisDistanceItem {
               element.getAttribute("data-ks-startdistance") || "100",
               10
             ),
-      velocity:
-        (options.velocity as VelocityType) ||
-        (element.getAttribute("data-ks-velocity") as VelocityType) ||
+      interactionType:
+        (options.interactionType as InteractionType) ||
+        (element.getAttribute("data-ks-interaction") as InteractionType) ||
         "linear",
       transformType:
         (options.transformType as TransformType) ||
@@ -46,7 +52,6 @@ class KinesisDistanceItem {
         "translate",
     } as Required<KinesisDistanceItemOptions>;
 
-    // Reading new attributes or setting default values
     this.duration = parseInt(
       element.getAttribute("data-ks-duration") || "1000",
       10
@@ -63,7 +68,6 @@ class KinesisDistanceItem {
 
     this.element.style.transformOrigin = this.options.transformOrigin;
     this.element.style.transform = this.initialTransform;
-    // Use the new duration and easing
     this.element.style.transition = `transform ${this.duration}ms ${this.easing}`;
 
     if (this.isActive) {
@@ -73,7 +77,6 @@ class KinesisDistanceItem {
 
   private bindEvents() {
     window.addEventListener("mousemove", this.onMouseMove);
-    window.addEventListener("resize", this.onResize);
     this.animate();
   }
 
@@ -82,8 +85,6 @@ class KinesisDistanceItem {
     this.mouseX = pos.x;
     this.mouseY = pos.y;
   };
-
-  private onResize = () => {};
 
   private calculateDistance(): number {
     const rect = this.element.getBoundingClientRect();
@@ -96,14 +97,17 @@ class KinesisDistanceItem {
     return Math.sqrt(dx * dx + dy * dy);
   }
 
-  private getVelocityFactor(distance: number): number {
-    switch (this.options.velocity) {
+  private getInteractionFactor(distance: number): number {
+    const { interactionType, startDistance } = this.options;
+    const normalizedDistance = clamp(distance / startDistance, 0, 1);
+
+    switch (interactionType) {
       case "linear":
-        return 1;
-      case "acceleration":
-        return 1 - clamp(distance / this.options.startDistance, 0, 1);
-      case "deceleration":
-        return clamp(distance / this.options.startDistance, 0, 1);
+        return 1 - normalizedDistance;
+      case "attraction":
+        return 1 - normalizedDistance;
+      case "repulsion":
+        return 1 - normalizedDistance;
       default:
         return 1;
     }
@@ -111,36 +115,100 @@ class KinesisDistanceItem {
 
   private applyTransform() {
     const distance = this.calculateDistance();
-    if (distance < this.options.startDistance) {
-      const factor = this.getVelocityFactor(distance);
-      let transformValue = "";
+    const { transformType, interactionType, startDistance } = this.options;
 
-      const { transformType, strength } = this.options;
+    if (
+      transformType === "translate" &&
+      interactionType === "attraction" &&
+      distance <= this.STICKING_THRESHOLD
+    ) {
+      const rect = this.element.getBoundingClientRect();
+      const elementX = rect.left + rect.width / 2;
+      const elementY = rect.top + rect.height / 2;
 
-      switch (transformType) {
-        case "translate":
-          const translateX =
-            (this.mouseX - window.innerWidth / 2) * (strength / 100) * factor;
-          const translateY =
-            (this.mouseY - window.innerHeight / 2) * (strength / 100) * factor;
-          transformValue = `translate(${translateX}px, ${translateY}px)`;
-          break;
-        case "rotate":
-          const rotateAngle = strength * factor;
-          transformValue = `rotate(${rotateAngle}deg)`;
-          break;
-        case "scale":
-          const scaleFactor = 1 + (strength / 100) * factor;
-          transformValue = `scale(${scaleFactor})`;
-          break;
-        default:
-          break;
-      }
+      const dx = this.mouseX - elementX;
+      const dy = this.mouseY - elementY;
+
+      const transformValue = `translate(${dx}px, ${dy}px)`;
 
       this.element.style.transform =
         `${this.initialTransform} ${transformValue}`.trim();
     } else {
-      this.element.style.transform = this.initialTransform;
+      if (distance < this.options.startDistance) {
+        const factor = this.getInteractionFactor(distance);
+        let transformValue = "";
+
+        const rect = this.element.getBoundingClientRect();
+        const elementX = rect.left + rect.width / 2;
+        const elementY = rect.top + rect.height / 2;
+
+        const dx = this.mouseX - elementX;
+        const dy = this.mouseY - elementY;
+
+        const distanceNonZero = Math.max(distance, this.MIN_DISTANCE);
+        const directionX = dx / distanceNonZero;
+        const directionY = dy / distanceNonZero;
+
+        switch (transformType) {
+          case "translate":
+            if (interactionType === "repulsion") {
+              const translateX = -directionX * this.options.strength * factor;
+              const translateY = -directionY * this.options.strength * factor;
+              transformValue = `translate(${translateX}px, ${translateY}px)`;
+            } else {
+              console.log("distance", distance);
+              const translateX = directionX * this.options.strength * factor;
+              const translateY = directionY * this.options.strength * factor;
+              transformValue = `translate(${translateX}px, ${translateY}px)`;
+              console.log("transformValue", transformValue);
+            }
+            break;
+
+          case "rotate":
+            let rotateAngle = (Math.atan2(dy, dx) * 180) / Math.PI;
+
+            if (interactionType === "repulsion") {
+              rotateAngle += 180;
+            }
+
+            rotateAngle = ((rotateAngle % 360) + 360) % 360;
+
+            const targetAngle = rotateAngle;
+            const currentTransform = this.initialTransform;
+            let currentAngle = 0;
+
+            const match = currentTransform.match(/rotate\(([-\d.]+)deg\)/);
+            if (match) {
+              currentAngle = parseFloat(match[1]);
+            }
+
+            let deltaAngle = targetAngle - currentAngle;
+            deltaAngle = ((deltaAngle + 180) % 360) - 180;
+
+            rotateAngle = currentAngle + deltaAngle * factor;
+
+            transformValue = `rotate(${rotateAngle}deg)`;
+            break;
+
+          case "scale":
+            if (interactionType === "repulsion") {
+              const scaleFactor = 1 - (this.options.strength / 100) * factor;
+              transformValue = `scale(${scaleFactor})`;
+            } else {
+              const scaleFactor = 1 + (this.options.strength / 100) * factor;
+              transformValue = `scale(${scaleFactor})`;
+            }
+            break;
+
+          default:
+            break;
+        }
+
+        this.element.style.transform =
+          `${this.initialTransform} ${transformValue}`.trim();
+      } else {
+        this.element.style.transform = this.initialTransform;
+      }
     }
   }
 
@@ -151,7 +219,6 @@ class KinesisDistanceItem {
 
   public destroy() {
     window.removeEventListener("mousemove", this.onMouseMove);
-    window.removeEventListener("resize", this.onResize);
     if (this.animationId) {
       cancelAnimationFrame(this.animationId);
     }

@@ -38,9 +38,7 @@ class KinesisScrollItem {
         (element.getAttribute("data-ks-transform") as TransformType) ||
         "translate",
       transformAxis:
-        options.transformAxis ||
-        element.getAttribute("data-ks-transformAxis") ||
-        "Y",
+        options.transformAxis || element.getAttribute("data-ks-transformAxis"),
       strength:
         options.strength !== undefined
           ? options.strength

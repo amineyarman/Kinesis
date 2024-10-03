@@ -1,3 +1,5 @@
+// kinesisAudioElement.ts
+
 import { TransformType, TransformAxisType } from "./types";
 import { parseTransformAxes } from "./utils";
 
@@ -72,18 +74,14 @@ class KinesisAudioElement {
 
     const transforms: string[] = [];
 
-    transformAxis.forEach((transformAxis) => {
+    transformAxis.forEach((axis) => {
       switch (transform) {
         case "translate": {
-          if (
-            transformAxis === "X" ||
-            transformAxis === "Y" ||
-            transformAxis === "Z"
-          ) {
+          if (["X", "Y", "Z"].includes(axis)) {
             const translate = value * strength;
-            const translateX = transformAxis === "X" ? translate : 0;
-            const translateY = transformAxis === "Y" ? translate : 0;
-            const translateZ = transformAxis === "Z" ? translate : 0;
+            const translateX = axis === "X" ? translate : 0;
+            const translateY = axis === "Y" ? translate : 0;
+            const translateZ = axis === "Z" ? translate : 0;
             transforms.push(
               `translate3d(${translateX}px, ${translateY}px, ${translateZ}px)`
             );
@@ -91,26 +89,18 @@ class KinesisAudioElement {
           break;
         }
         case "rotate": {
-          if (
-            transformAxis === "X" ||
-            transformAxis === "Y" ||
-            transformAxis === "Z"
-          ) {
+          if (["X", "Y", "Z"].includes(axis)) {
             const rotate = value * strength;
-            transforms.push(`rotate${transformAxis}(${rotate}deg)`);
+            transforms.push(`rotate${axis}(${rotate}deg)`);
           }
           break;
         }
         case "scale": {
-          if (
-            transformAxis === "X" ||
-            transformAxis === "Y" ||
-            transformAxis === "Z"
-          ) {
+          if (["X", "Y", "Z"].includes(axis)) {
             const scale = 1 + value * strength * 0.1;
-            const scaleX = transformAxis === "X" ? scale : 1;
-            const scaleY = transformAxis === "Y" ? scale : 1;
-            const scaleZ = transformAxis === "Z" ? scale : 1;
+            const scaleX = axis === "X" ? scale : 1;
+            const scaleY = axis === "Y" ? scale : 1;
+            const scaleZ = axis === "Z" ? scale : 1;
             transforms.push(`scale3d(${scaleX}, ${scaleY}, ${scaleZ})`);
           }
           break;
