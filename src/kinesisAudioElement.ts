@@ -1,5 +1,3 @@
-// kinesisAudioElement.ts
-
 import { TransformType, TransformAxisType } from "./types";
 import { parseTransformAxes } from "./utils";
 

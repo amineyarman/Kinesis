@@ -1,5 +1,3 @@
-// kinesisAudio.ts
-
 import { KinesisAudioOptions } from "./types";
 import KinesisAudioElement from "./kinesisAudioElement";
 import { throttle } from "./utils";

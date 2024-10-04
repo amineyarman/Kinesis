@@ -1,6 +1,6 @@
 {
   "name": "@amineyarman/kinesis",
-  "version": "1.0.1",
+  "version": "1.0.2",
   "description": "Easily create complex interactive animations.",
   "main": "dist/kinesis.umd.js",
   "module": "dist/kinesis.es.js",
