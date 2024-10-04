@@ -34,9 +34,9 @@ class KinesisTransformerElement {
       attributeFilter: [
         "data-ks-strength",
         "data-ks-transform",
-        "data-ks-transformAxis",
-        "data-ks-interactionAxis",
-        "data-ks-transformOrigin",
+        "data-ks-transformaxis",
+        "data-ks-interactionaxis",
+        "data-ks-transformorigin",
       ],
     });
   }
@@ -51,12 +51,12 @@ class KinesisTransformerElement {
       "translate";
 
     const transformAxisAttribute =
-      this.element.getAttribute("data-ks-transformAxis") ||
+      this.element.getAttribute("data-ks-transformaxis") ||
       (this.type === "rotate" ? "Z" : "X, Y");
     this.transformAxis = parseTransformAxes(transformAxisAttribute);
 
     const interactionAxisAttribute = this.element.getAttribute(
-      "data-ks-interactionAxis"
+      "data-ks-interactionaxis"
     );
     this.interactionAxis = interactionAxisAttribute
       ? (interactionAxisAttribute.trim().toUpperCase() as InteractionAxisType)
@@ -64,13 +64,13 @@ class KinesisTransformerElement {
 
     if (this.interactionAxis && !["X", "Y"].includes(this.interactionAxis)) {
       console.warn(
-        "Invalid value for data-ks-interactionAxis. Acceptable values are 'X' or 'Y'."
+        "Invalid value for data-ks-interactionaxis. Acceptable values are 'X' or 'Y'."
       );
       this.interactionAxis = null;
     }
 
     this.transformOrigin =
-      this.element.getAttribute("data-ks-transformOrigin") || "center center";
+      this.element.getAttribute("data-ks-transformorigin") || "center center";
 
     this.element.style.transformOrigin = this.transformOrigin;
   }

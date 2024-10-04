@@ -32,7 +32,7 @@ class KinesisAudioElement {
     this.transformOrigin =
       element.getAttribute("data-ks-transformorigin") || "center";
 
-    const axisAttr = element.getAttribute("data-ks-transformAxis");
+    const axisAttr = element.getAttribute("data-ks-transformaxis");
     if (axisAttr) {
       this.transformAxis = parseTransformAxes(axisAttr);
       if (this.transformAxis.length === 0) {

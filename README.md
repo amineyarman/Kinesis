@@ -64,9 +64,9 @@ The `KinesisTransformerElement` class is a child element within the `KinesisTran
 | data-kinesistransformer-element | Boolean (presence)                              | Required               | Marks the element as a transformer element. Must be present to apply transformations.                                                         |
 | data-ks-strength                | Number                                          | 10                     | Determines the intensity of the transformation effect. Higher values result in more pronounced transformations.                               |
 | data-ks-transform               | Enum (translate, rotate, scale, tilt, tilt_inv) | translate              | Specifies the type of transformation to apply.                                                                                                |
-| data-ks-transformAxis           | String                                          | X, Y (or Z for rotate) | Defines the axes along which the transformation is applied. Use a comma-separated list (e.g., X, Y, Z).                                       |
-| data-ks-interactionAxis         | Enum (X, Y) or null                             | null                   | Restricts the interaction to a specific axis. Set to X or Y to limit transformations to that axis. If not set, interactions affect both axes. |
-| data-ks-transformOrigin         | String                                          | center center          | Sets the CSS transform-origin property, defining the point around which transformations are applied (e.g., top left, 50% 50%).                |
+| data-ks-transformaxis           | String                                          | X, Y (or Z for rotate) | Defines the axes along which the transformation is applied. Use a comma-separated list (e.g., X, Y, Z).                                       |
+| data-ks-interactionaxis         | Enum (X, Y) or null                             | null                   | Restricts the interaction to a specific axis. Set to X or Y to limit transformations to that axis. If not set, interactions affect both axes. |
+| data-ks-transformorigin         | String                                          | center center          | Sets the CSS transform-origin property, defining the point around which transformations are applied (e.g., top left, 50% 50%).                |
 
 ### KinesisDepth
 
@@ -142,7 +142,7 @@ A child element inside the `KinesisAudio` container. It responds to audio freque
 | data-ks-audioindex        | Number                          | 50                     | Specifies the frequency bin index to be used for transforming the element. Higher indices correspond to higher frequencies. |
 | data-ks-strength          | Number                          | 10                     | Determines the intensity of the transformation effect. Higher values result in more pronounced transformations.             |
 | data-ks-transform         | Enum (translate, rotate, scale) | translate              | Specifies the type of transformation to apply based on audio data.                                                          |
-| data-ks-transformAxis     | String                          | X, Y (or Z for rotate) | Defines the axes along which the transformation is applied. Use a comma-separated list (e.g., X, Y, Z).                     |
+| data-ks-transformaxis     | String                          | X, Y (or Z for rotate) | Defines the axes along which the transformation is applied. Use a comma-separated list (e.g., X, Y, Z).                     |
 | data-ks-transformorigin   | String                          | center                 | Sets the CSS transform-origin property, defining the point around which transformations are applied (e.g., top left).       |
 
 ### KinesisScrollItem
@@ -168,7 +168,7 @@ Transforms elements based on scroll position. Ideal for parallax effects. This i
 | data-ks-duration        | Number                          | 1000                           | Duration of the transformation transition in milliseconds.                                                      |
 | data-ks-easing          | String                          | cubic-bezier(0.23, 1, 0.32, 1) | CSS easing function for the transformation transition.                                                          |
 | data-ks-transform       | Enum (translate, rotate, scale) | translate                      | Specifies the type of transformation to apply based on scroll progress.                                         |
-| data-ks-transformAxis   | String                          | X, Y (or Z for rotate)         | Defines the axes along which the transformation is applied. Use a comma-separated list (e.g., X, Y, Z).         |
+| data-ks-transformaxis   | String                          | X, Y (or Z for rotate)         | Defines the axes along which the transformation is applied. Use a comma-separated list (e.g., X, Y, Z).         |
 | data-ks-strength        | Number                          | 10                             | Determines the intensity of the transformation effect. Higher values result in more pronounced transformations. |
 | data-ks-throttle        | Number                          | 100                            | Throttling duration in milliseconds for scroll event handling to optimize performance. Default is 100ms.        |
 
@@ -210,7 +210,7 @@ A child element inside the `KinesisPath` container. It moves along the specified
 | data-ks-duration         | Number                          | 1000                           | Duration of the transformation transition in milliseconds.                                                               |
 | data-ks-easing           | String                          | cubic-bezier(0.23, 1, 0.32, 1) | CSS easing function for the transformation transition.                                                                   |
 | data-ks-transform        | Enum (translate, rotate, scale) | translate                      | Specifies the type of transformation to apply based on path data.                                                        |
-| data-ks-transformAxis    | String                          | X, Y (or Z for rotate)         | Defines the axes along which the transformation is applied. Use a comma-separated list (e.g., X, Y, Z).                  |
+| data-ks-transformaxis    | String                          | X, Y (or Z for rotate)         | Defines the axes along which the transformation is applied. Use a comma-separated list (e.g., X, Y, Z).                  |
 | data-ks-transformorigin  | String                          | center                         | Sets the CSS transform-origin property, defining the point around which transformations are applied (e.g., top left).    |
 
 ### KinesisDistanceItem
