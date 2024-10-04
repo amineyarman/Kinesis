@@ -1,5 +1,3 @@
-// kinesisDistanceItem.ts
-
 import {
   KinesisDistanceItemOptions,
   InteractionType,
