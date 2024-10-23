@@ -1,4 +1,4 @@
-# Kinesis
+# Kinesis.js
 
 `@amineyarman/kinesis` is a versatile library for adding dynamic, interactive, and physics-based animations to your web components. It includes features like transforming elements based on mouse movement, scroll events, and even audio frequency data.
 
